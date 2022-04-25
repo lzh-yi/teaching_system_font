@@ -13,6 +13,12 @@ export default [
   { path: '/group_work', name: '分组作业', icon: 'icon-zuoye', component: './GroupWork' },
   { path: '/examination', name: '考试管理', icon: 'icon-kaoshi', component: './Examination' },
   {
+    path: '/group_work/detail',
+    name: '习题分组详情',
+    component: './GroupWorkDetail',
+    hideInMenu: true,
+  },
+  {
     path: '/admin',
     name: '管理页',
     icon: 'crown',

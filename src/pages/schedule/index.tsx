@@ -66,7 +66,7 @@ const Schedule: React.FC = () => {
 
       <div className={tableStyles['table-wrap']}>
         <Table
-          scroll={{ x: 1000 }}
+          scroll={{ x: 900 }}
           // className={tableStyles['log-tab']}
           columns={colConfig as any}
           dataSource={tableDataVal}

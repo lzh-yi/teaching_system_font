@@ -1,10 +1,25 @@
-import { BarsOutlined, FieldTimeOutlined } from '@ant-design/icons';
-import { Button, Col, DatePicker, Empty, Form, message, Modal, Popover, Row, Space } from 'antd';
+import { BarsOutlined, EditOutlined, FieldTimeOutlined } from '@ant-design/icons';
+import {
+  Button,
+  Col,
+  DatePicker,
+  Input,
+  Empty,
+  Form,
+  message,
+  Modal,
+  Popover,
+  Row,
+  Space,
+} from 'antd';
 import React, { useState } from 'react';
 import styles from './index.less';
+import { history } from 'umi';
+
+const { Search } = Input;
 
 const WorkTabPane: React.FC = (props: any) => {
-  const { workTabArr } = props;
+  const { workTabArr, editWorkGroup } = props;
   const [publishVisible, setPublishVisible] = useState<boolean>(false);
   const [deadlineVisible, setDeadlineVisible] = useState<boolean>(false);
   const [deleteVisible, setDeleteVisible] = useState<boolean>(false);
@@ -30,7 +45,10 @@ const WorkTabPane: React.FC = (props: any) => {
       return (
         <div key={item.id} className={styles['item-wrap']}>
           <Row>
-            <Col span={18}>
+            <Col
+              span={18}
+              onClick={() => history.push(`/group_work/detail?work_status=${item.status}`)}
+            >
               <div className={styles['status-name']}>
                 <div>
                   <Space>
@@ -61,6 +79,12 @@ const WorkTabPane: React.FC = (props: any) => {
             <Col span={6}>
               <div className={styles['right-wrap']}>
                 {item.status === 0 && (
+                  <div className={styles['left']} onClick={editWorkGroup}>
+                    <EditOutlined style={{ fontSize: '18px' }} />
+                    <span>编辑</span>
+                  </div>
+                )}
+                {item.status === 0 && (
                   <div className={styles['left']} onClick={() => setPublishVisible(true)}>
                     <FieldTimeOutlined style={{ fontSize: '18px' }} />
                     <span>发布</span>
@@ -70,12 +94,16 @@ const WorkTabPane: React.FC = (props: any) => {
                   <Popover
                     content={
                       <div>
-                        <p style={{ cursor: 'pointer' }} onClick={() => setPublishVisible(true)}>
-                          立即发布
-                        </p>
-                        <p style={{ cursor: 'pointer' }} onClick={() => setDeadlineVisible(true)}>
-                          立即截止
-                        </p>
+                        {item.status == 0 && (
+                          <p style={{ cursor: 'pointer' }} onClick={() => setPublishVisible(true)}>
+                            立即发布
+                          </p>
+                        )}
+                        {item.status == 1 && (
+                          <p style={{ cursor: 'pointer' }} onClick={() => setDeadlineVisible(true)}>
+                            立即截止
+                          </p>
+                        )}
                         <p style={{ cursor: 'pointer' }} onClick={() => setDeleteVisible(true)}>
                           立即删除
                         </p>
@@ -96,6 +124,11 @@ const WorkTabPane: React.FC = (props: any) => {
     });
     return (
       <div>
+        <Row style={{ marginBottom: '15px' }}>
+          <Col push={18} span={6}>
+            <Search placeholder="请输入习题分组名称" enterButton />
+          </Col>
+        </Row>
         <Space direction="vertical" size={15} style={{ width: '100%', paddingBottom: '20px' }}>
           {workList}
         </Space>
@@ -124,7 +157,7 @@ const WorkTabPane: React.FC = (props: any) => {
               >
                 <Row>
                   <Col span={12}>
-                    <Space align="center">
+                    <Space align="baseline">
                       <p>发布时间：</p>
                       <Form.Item
                         name="publish_time"
@@ -135,7 +168,7 @@ const WorkTabPane: React.FC = (props: any) => {
                     </Space>
                   </Col>
                   <Col span={12}>
-                    <Space align="center">
+                    <Space align="baseline">
                       <p>截止时间：</p>
                       <Form.Item
                         name="end_time"
@@ -185,8 +218,8 @@ const WorkTabPane: React.FC = (props: any) => {
               >
                 <Row>
                   <Col span={24}>
-                    <Space align="center">
-                      <p>截止时间：</p>
+                    <Space align="baseline">
+                      <span>截止时间：</span>
                       <Form.Item
                         name="end_time"
                         rules={[{ required: true, message: '请输入截止时间' }]}
@@ -201,7 +234,7 @@ const WorkTabPane: React.FC = (props: any) => {
                     <Button type="primary" htmlType="submit" loading={upLoading}>
                       截止作业
                     </Button>
-                    <Button loading={upLoading} onClick={() => setPublishVisible(false)}>
+                    <Button loading={upLoading} onClick={() => setDeadlineVisible(false)}>
                       暂不截止
                     </Button>
                   </Space>

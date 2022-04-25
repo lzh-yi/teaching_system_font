@@ -90,7 +90,7 @@ const UploadSyllabus: React.FC = (props) => {
       setUpLoading(false);
       closeUploadModal();
       message.success('上传成功');
-    }, 2000);
+    }, 1000);
   }
 
   function onFinishFailed() {}

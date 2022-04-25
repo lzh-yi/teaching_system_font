@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Button, Col, Row, Table, Input, Modal, Space } from 'antd';
+import { Button, Col, Row, Table, Modal, Space, Input } from 'antd';
 import tableStyles from '@/assets/styles/table.less';
 import { columnConfig, tableDataVal } from './constant';
 import UploadSyllabus from '@/pages/syllabus/components/UploadSyllabus';
@@ -66,7 +66,7 @@ const Syllabus: React.FC = () => {
 
       <div className={tableStyles['table-wrap']}>
         <Table
-          scroll={{ x: 1000 }}
+          scroll={{ x: 900 }}
           // className={tableStyles['log-tab']}
           columns={colConfig as any}
           dataSource={tableDataVal}
