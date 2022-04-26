@@ -10,7 +10,7 @@ const Footer: React.FC = () => {
       links={[
         {
           key: 'Java',
-          title: 'Java教学练一体化平台',
+          title: 'Java教学练',
           href: '',
           blankTarget: true,
         },

@@ -4,7 +4,7 @@ import { workCompleteCol, tableDataVal, workCompleteColType } from './constant';
 import { history } from 'umi';
 import tableStyles from '@/assets/styles/table.less';
 
-const WorkCompleteList: React.FC = () => {
+const ExaminationCompleteList: React.FC = () => {
   const [searchCondition, setSearchCondition] = useState({ page: 1, pageSize: 20 });
   const [totalData, setTotalData] = useState<number>(0);
   const [tableLoading, setTableLoading] = useState<boolean>(false);
@@ -52,7 +52,6 @@ const WorkCompleteList: React.FC = () => {
       // })
     },
   };
-
   return (
     <div>
       <div className={tableStyles['table-wrap']}>
@@ -68,13 +67,13 @@ const WorkCompleteList: React.FC = () => {
     </div>
   );
 
-  // 批改作业
+  // 批改考试
   function handleCorrectWork() {
-    history.push('/group_work/correct');
+    history.push('/examination/correct');
   }
   function handleReviewWork() {
-    history.push('/group_work/review');
+    history.push('/examination/review');
   }
 };
 
-export default WorkCompleteList;
+export default ExaminationCompleteList;

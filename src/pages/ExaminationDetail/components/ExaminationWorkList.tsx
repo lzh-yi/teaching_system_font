@@ -20,8 +20,8 @@ import {
   FormOutlined,
   PlusCircleOutlined,
 } from '@ant-design/icons';
-import CreateSelectWork from '@/pages/GroupWorkDetail/components/CreateSelectWork';
-import CreateSubjectiveWork from '@/pages/GroupWorkDetail/components/CreateSubjectiveWork';
+import CreateSelectWork from '@/pages/ExaminationDetail/components/CreateSelectWork';
+import CreateSubjectiveWork from '@/pages/ExaminationDetail/components/CreateSubjectiveWork';
 
 type workItemType = {
   id: number;
@@ -36,7 +36,7 @@ type workItemType = {
   type: number;
 };
 
-const GroupWorkDetail: React.FC = (props: any) => {
+const ExaminationWorkList: React.FC = (props: any) => {
   const [selectWorkVisible, setSelectWorkVisible] = useState<boolean>(false);
   const [subjectiveWorkVisible, setSubjectiveWorkVisible] = useState<boolean>(false);
   const [publishVisible, setPublishVisible] = useState<boolean>(false);
@@ -127,7 +127,7 @@ const GroupWorkDetail: React.FC = (props: any) => {
           <Row>
             <Col span={10}>
               <Space>
-                <div className={styles['title']}>Java对象练习</div>
+                <div className={styles['title']}>期末考试一</div>
                 <Button
                   shape="round"
                   size="small"
@@ -144,11 +144,13 @@ const GroupWorkDetail: React.FC = (props: any) => {
                 <Button type="primary" shape="round" size="small">
                   简单
                 </Button>
-                <span style={{ color: '#99B5D7' }}>建议时长：90分钟</span>
+                <span style={{ color: '#99B5D7' }}>建议时长：120分钟</span>
               </Space>
             </Col>
           </Row>
-          <div style={{ marginTop: '10px' }}>习题描述：该组习题主要是熟悉Java的类机制...</div>
+          <div style={{ marginTop: '10px' }}>
+            考试描述：本场考试是对Java对象掌握情况的一次考察...
+          </div>
         </Col>
         {workGroupStatus == '0' && (
           <Col span={3}>
@@ -335,7 +337,7 @@ const GroupWorkDetail: React.FC = (props: any) => {
       )}
 
       <Modal
-        title="发布作业"
+        title="发布考试"
         width={600}
         maskClosable={false}
         visible={publishVisible}
@@ -344,8 +346,8 @@ const GroupWorkDetail: React.FC = (props: any) => {
       >
         <div>
           <div className={styles['publish-modal-top']}>
-            <p>学生将立即收到作业</p>
-            <p>本操作只对"未发布"的作业有效</p>
+            <p>学生将立即收到考试</p>
+            <p>本操作只对"未发布"的考试有效</p>
           </div>
           <div className={styles['publish-modal-bottom']}>
             <Form
@@ -384,7 +386,7 @@ const GroupWorkDetail: React.FC = (props: any) => {
               <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
                 <Space>
                   <Button type="primary" htmlType="submit" loading={upLoading}>
-                    发布作业
+                    发布考试
                   </Button>
                   <Button loading={upLoading} onClick={() => setPublishVisible(false)}>
                     暂不发布
@@ -425,4 +427,4 @@ const GroupWorkDetail: React.FC = (props: any) => {
   function onFinishFailed() {}
 };
 
-export default GroupWorkDetail;
+export default ExaminationWorkList;

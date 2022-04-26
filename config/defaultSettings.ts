@@ -15,7 +15,7 @@ const Settings: LayoutSettings & {
   title: 'Java 教学练一体化平台',
   pwa: false,
   logo: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
-  iconfontUrl: '//at.alicdn.com/t/font_3353416_2ilrh3kgltu.js',
+  iconfontUrl: '//at.alicdn.com/t/font_3353416_pt9ywzqn1f8.js',
 };
 
 export default Settings;

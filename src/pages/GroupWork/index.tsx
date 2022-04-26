@@ -130,7 +130,7 @@ const GroupWork: React.FC = () => {
             name="complexity"
             rules={[{ required: true, message: '请输入难易程度' }]}
           >
-            <Select defaultValue="0" style={{ width: 120 }} onChange={() => {}}>
+            <Select style={{ width: 120 }} onChange={() => {}}>
               <Option value="0">简单</Option>
               <Option value="1">一般</Option>
               <Option value="2">偏难</Option>
@@ -142,8 +142,8 @@ const GroupWork: React.FC = () => {
             rules={[{ required: true, message: '请输入建议完成时长' }]}
           >
             <Space>
-              <InputNumber min={60} max={120} defaultValue={60} />
-              <span>分钟</span>
+              <InputNumber min={60} max={120} />
+              <span>分钟(60-120)</span>
             </Space>
           </Form.Item>
           <Form.Item wrapperCol={{ offset: 8, span: 16 }}>

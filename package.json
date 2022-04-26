@@ -1,8 +1,8 @@
 {
-  "name": "ant-design-pro",
+  "name": "Java Teaching Platform",
   "version": "5.2.0",
   "private": true,
-  "description": "An out-of-box UI solution for enterprise applications",
+  "description": "一款基于Java和React搭建的前后端分离的教学平台",
   "scripts": {
     "analyze": "cross-env ANALYZE=1 umi build",
     "build": "umi build",

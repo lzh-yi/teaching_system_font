@@ -21,7 +21,7 @@ export const workCompleteCol = [
     dataIndex: 'user_name',
   },
   {
-    title: '作业状态',
+    title: '考试状态',
     align: 'center',
     width: 100,
     dataIndex: 'work_status',
