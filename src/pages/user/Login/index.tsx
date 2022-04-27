@@ -6,14 +6,22 @@ import {
   UserOutlined,
   WeiboCircleOutlined,
 } from '@ant-design/icons';
-import { Alert, message, Tabs } from 'antd';
+import { Alert, message, Tabs, Select } from 'antd';
 import React, { useState } from 'react';
-import { ProFormCaptcha, ProFormCheckbox, ProFormText, LoginForm } from '@ant-design/pro-form';
+import {
+  ProFormCaptcha,
+  ProFormCheckbox,
+  ProFormText,
+  LoginForm,
+  ProFormSelect,
+} from '@ant-design/pro-form';
 import { history, useModel } from 'umi';
 import Footer from '@/components/Footer';
 import { login } from '@/services/ant-design-pro/api';
 import { getFakeCaptcha } from '@/services/ant-design-pro/login';
 import styles from './index.less';
+
+const { Option } = Select;
 
 const LoginMessage: React.FC<{
   content: string;
@@ -179,6 +187,27 @@ const Login: React.FC = () => {
                     message: '密码是必填项！',
                   },
                 ]}
+              />
+              <ProFormSelect
+                rules={[
+                  {
+                    required: true,
+                    message: '请选择注册身份！',
+                  },
+                ]}
+                options={[
+                  {
+                    value: 0,
+                    label: '教师',
+                  },
+                  {
+                    value: 1,
+                    label: '学生',
+                  },
+                ]}
+                width="md"
+                name="identity"
+                placeholder="请选择注册身份"
               />
             </>
           )}

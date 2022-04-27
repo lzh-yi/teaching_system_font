@@ -78,7 +78,7 @@ const Schedule: React.FC = () => {
       <Modal
         visible={visible}
         maskClosable={false}
-        title="上传教学进度"
+        title="添加/更新教学进度"
         onCancel={() => setVisible(false)}
         footer={null}
       >

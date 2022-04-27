@@ -78,7 +78,7 @@ const Syllabus: React.FC = () => {
       <Modal
         visible={visible}
         maskClosable={false}
-        title="上传教学大纲"
+        title="添加/更新教学大纲"
         onCancel={() => setVisible(false)}
         footer={null}
       >

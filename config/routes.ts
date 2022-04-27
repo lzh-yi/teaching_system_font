@@ -10,8 +10,18 @@ export default [
   // { path: '/welcome', name: '欢迎', icon: 'smile', component: './Welcome' },
   { path: '/syllabus', name: '教学大纲', icon: 'icon-kechengdagang', component: './Syllabus' },
   { path: '/schedule', name: '进度管理', icon: 'icon-jindu', component: './Schedule' },
-  { path: '/group_work', name: '分组作业', icon: 'icon-zuoye', component: './GroupWork' },
-  { path: '/examination', name: '考试管理', icon: 'icon-kaoshimoshi-', component: './Examination' },
+  {
+    path: '/teaching_goal',
+    name: '教学目标',
+    icon: 'icon-jiaoxuemubiao',
+    component: './TeachingGoal',
+  },
+  {
+    path: '/knowledge_point',
+    name: '知识点管理',
+    icon: 'icon-zcpt-zhishikuguanli',
+    component: './KnowledgePoint',
+  },
   {
     path: '/group_work/detail',
     name: '习题分组详情',
@@ -48,6 +58,8 @@ export default [
     component: './ReviewExamination',
     hideInMenu: true,
   },
+  { path: '/group_work', name: '分组作业', icon: 'icon-zuoye', component: './GroupWork' },
+  { path: '/examination', name: '考试管理', icon: 'icon-kaoshimoshi-', component: './Examination' },
   {
     path: '/score_manage',
     name: '成绩管理',
@@ -61,14 +73,20 @@ export default [
       },
       {
         path: '/score_manage/examination',
-        name: '考试成绩',  
+        name: '考试成绩',
         icon: 'calculator',
         component: './ScoreManagement/ExaminationManagement',
+      },
+      {
+        path: '/score_manage/end_score',
+        name: '最终成绩',
+        icon: 'appstoreAdd',
+        component: './ScoreManagement/EndScoreManagement',
       },
       { component: './404' },
     ],
   },
-  { name: '查询表格', icon: 'table', path: '/list', component: './TableList' },
+  { path: '/degree ', name: '达程度分析', icon: 'icon-shujufenxi', component: './DegreeAnalyses' },
   { path: '/', redirect: '/syllabus' },
   { component: './404' },
 ];
