@@ -4,6 +4,7 @@ import { Button, Col, Row, Table, Modal, Space, Input } from 'antd';
 import tableStyles from '@/assets/styles/table.less';
 import { columnConfig, tableDataVal } from './constant';
 import UploadSyllabus from '@/pages/syllabus/components/UploadSyllabus';
+import { useAccess, Access } from 'umi';
 
 const { Search } = Input;
 
@@ -13,6 +14,7 @@ const Syllabus: React.FC = () => {
   const [tableLoading, setTableLoading] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
 
+  const access = useAccess();
   let colConfig = [].concat(columnConfig, [
     {
       title: '操作',
@@ -23,13 +25,15 @@ const Syllabus: React.FC = () => {
         return (
           <Space>
             <Button type="primary">下载</Button>
-            <Button
-              type="primary"
-              onClick={updateOutLin}
-              style={{ backgroundColor: '#66AF77', border: 'none' }}
-            >
-              更新
-            </Button>
+            {access.canAdmin && (
+              <Button
+                type="primary"
+                onClick={updateOutLin}
+                style={{ backgroundColor: '#66AF77', border: 'none' }}
+              >
+                更新
+              </Button>
+            )}
           </Space>
         );
       },
@@ -55,9 +59,11 @@ const Syllabus: React.FC = () => {
     <PageContainer>
       <Row>
         <Col span={12}>
-          <Button type="primary" onClick={() => setVisible(true)}>
-            上传大纲
-          </Button>
+          <Access accessible={access.canAdmin as any}>
+            <Button type="primary" onClick={() => setVisible(true)}>
+              上传大纲
+            </Button>
+          </Access>
         </Col>
         <Col span={6} push={6}>
           <Search placeholder="请输入教学大纲" enterButton />

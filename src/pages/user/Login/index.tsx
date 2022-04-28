@@ -101,7 +101,7 @@ const Login: React.FC = () => {
         >
           <Tabs activeKey={type} onChange={setType}>
             <Tabs.TabPane key="account" tab={'账户密码登录'} />
-            <Tabs.TabPane key="mobile" tab={'新用户注册'} />
+            <Tabs.TabPane key="register" tab={'新用户注册'} />
           </Tabs>
 
           {status === 'error' && loginType === 'account' && (
@@ -143,7 +143,7 @@ const Login: React.FC = () => {
           )}
 
           {status === 'error' && loginType === 'mobile' && <LoginMessage content="验证码错误" />}
-          {type === 'mobile' && (
+          {type === 'register' && (
             <>
               <ProFormText
                 name="username"

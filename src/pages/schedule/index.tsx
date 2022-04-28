@@ -4,6 +4,7 @@ import tableStyles from '@/assets/styles/table.less';
 import { columnConfig, tableDataVal } from './constant';
 import { Button, Col, Modal, Row, Table, Input, Space } from 'antd';
 import UploadSyllabus from '@/pages/schedule/components/UploadSchedule';
+import { useAccess, Access } from 'umi';
 
 const { Search } = Input;
 
@@ -13,6 +14,7 @@ const Schedule: React.FC = () => {
   const [tableLoading, setTableLoading] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
 
+  const access = useAccess();
   let colConfig = [].concat(columnConfig, [
     {
       title: '操作',
@@ -23,13 +25,15 @@ const Schedule: React.FC = () => {
         return (
           <Space>
             <Button type="primary">下载</Button>
-            <Button
-              type="primary"
-              onClick={updateSchedule}
-              style={{ backgroundColor: '#66AF77', border: 'none' }}
-            >
-              更新
-            </Button>
+            {access.canAdmin && (
+              <Button
+                type="primary"
+                onClick={updateSchedule}
+                style={{ backgroundColor: '#66AF77', border: 'none' }}
+              >
+                更新
+              </Button>
+            )}
           </Space>
         );
       },
@@ -55,9 +59,11 @@ const Schedule: React.FC = () => {
     <PageContainer>
       <Row>
         <Col span={12}>
-          <Button type="primary" onClick={() => setVisible(true)}>
-            上传进度
-          </Button>
+          <Access accessible={access.canAdmin as any}>
+            <Button type="primary" onClick={() => setVisible(true)}>
+              上传进度
+            </Button>
+          </Access>
         </Col>
         <Col span={6} push={6}>
           <Search placeholder="请输入教学进度" enterButton />
