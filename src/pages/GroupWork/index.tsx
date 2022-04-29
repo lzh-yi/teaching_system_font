@@ -126,6 +126,17 @@ const GroupWork: React.FC = () => {
             <TextArea rows={4} placeholder="请输入作业描述" maxLength={300} />
           </Form.Item>
           <Form.Item
+            label="所属大纲"
+            name="syllabus"
+            rules={[{ required: true, message: '请选择习题所属大纲' }]}
+          >
+            <Select style={{ width: 300 }} onChange={() => {}}>
+              <Option value={0}>教学大纲一(版本一)</Option>
+              <Option value={1}>教学大纲二(版本二)</Option>
+              <Option value={2}>教学大纲三(版本一)</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item
             label="难易程度"
             name="complexity"
             rules={[{ required: true, message: '请输入难易程度' }]}
@@ -144,6 +155,16 @@ const GroupWork: React.FC = () => {
             <Space>
               <InputNumber min={60} max={120} />
               <span>分钟(60-120)</span>
+            </Space>
+          </Form.Item>
+          <Form.Item
+            label="成绩占比"
+            name="rate"
+            rules={[{ required: true, message: '请输入作业成绩占比(0-1)' }]}
+          >
+            <Space>
+              <InputNumber min={0} max={1} />
+              <span>成绩占比(0-1)</span>
             </Space>
           </Form.Item>
           <Form.Item wrapperCol={{ offset: 8, span: 16 }}>

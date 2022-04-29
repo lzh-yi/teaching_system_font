@@ -35,21 +35,13 @@ const UploadSyllabus: React.FC = (props) => {
       onFinishFailed={onFinishFailed}
       autoComplete="off"
     >
-      <Form.Item name="file" rules={[{ required: true, message: '请上传大纲文件' }]}>
-        <Space style={{ paddingLeft: '17px' }}>
-          <Upload {...loadProps}>
-            <Button icon={<UploadOutlined />}>大纲上传</Button>
-          </Upload>
-          <span>(单个文件最大50M)</span>
-        </Space>
-      </Form.Item>
-      <Form.Item
+      {/* <Form.Item
         label="大纲编号"
         name="number"
         rules={[{ required: true, message: '请输入大纲编号' }]}
       >
         <Input />
-      </Form.Item>
+      </Form.Item> */}
       <Form.Item
         label="大纲标题"
         name="name"
@@ -70,6 +62,14 @@ const UploadSyllabus: React.FC = (props) => {
         rules={[{ required: true, message: '请输入负责人' }]}
       >
         <Input />
+      </Form.Item>
+      <Form.Item name="file" rules={[{ required: true, message: '请上传大纲文件' }]}>
+        <Space style={{ paddingLeft: '17px' }}>
+          <Upload {...loadProps}>
+            <Button icon={<UploadOutlined />}>大纲上传</Button>
+          </Upload>
+          <span>(单个文件最大50M)</span>
+        </Space>
       </Form.Item>
       <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
         <Space>

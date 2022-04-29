@@ -1,8 +1,7 @@
 export type TeachingGoalColType = {
   id: number;
   name: string;
-  outline_id: number;
-  outline_name: string;
+  content: string;
 };
 
 export const columnConfig = [
@@ -19,16 +18,10 @@ export const columnConfig = [
     dataIndex: 'name',
   },
   {
-    title: '大纲id',
+    title: '内容',
     align: 'center',
     width: 100,
-    dataIndex: 'outline_id',
-  },
-  {
-    title: '大纲',
-    align: 'center',
-    width: 100,
-    dataIndex: 'outline_name',
+    dataIndex: 'content',
   },
 ];
 
@@ -36,25 +29,21 @@ export const tableDataVal: TeachingGoalColType[] = [
   {
     id: 1,
     name: '教学目标一',
-    outline_id: 1,
-    outline_name: '教学大纲一',
+    content: '教学内容',
   },
   {
     id: 2,
     name: '教学目标二',
-    outline_id: 1,
-    outline_name: '教学大纲一',
+    content: '教学内容',
   },
   {
     id: 3,
     name: '教学目标三',
-    outline_id: 2,
-    outline_name: '教学大纲二',
+    content: '教学内容',
   },
   {
     id: 4,
     name: '教学目标十',
-    outline_id: 3,
-    outline_name: '教学大纲三',
+    content: '教学内容',
   },
 ];

@@ -1,6 +1,5 @@
 type colType = {
   id: number;
-  number: string;
   name: string;
   version: string;
   upload_time: string;
@@ -12,7 +11,7 @@ export const columnConfig = [
     title: '编号',
     align: 'center',
     width: 100,
-    dataIndex: 'number',
+    dataIndex: 'id',
   },
   {
     title: '标题',
@@ -43,7 +42,6 @@ export const columnConfig = [
 export const tableDataVal: colType[] = [
   {
     id: 1,
-    number: '001',
     name: '教学进度1',
     version: '版本1',
     upload_time: '2022-02-01',
@@ -51,7 +49,6 @@ export const tableDataVal: colType[] = [
   },
   {
     id: 2,
-    number: '002',
     name: '教学进度1',
     version: '版本2',
     upload_time: '2022-03-01',
@@ -59,7 +56,6 @@ export const tableDataVal: colType[] = [
   },
   {
     id: 3,
-    number: '003',
     name: '教学进度2',
     version: '版本1',
     upload_time: '2022-02-04',
@@ -67,7 +63,6 @@ export const tableDataVal: colType[] = [
   },
   {
     id: 4,
-    number: '004',
     name: '教学进度3',
     version: '版本1',
     upload_time: '2022-02-19',

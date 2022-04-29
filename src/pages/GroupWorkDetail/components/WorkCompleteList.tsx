@@ -18,11 +18,9 @@ const WorkCompleteList: React.FC = () => {
       render(text: boolean, record: workCompleteColType) {
         return (
           <Space>
-            {record.work_status === 1 && !text && (
-              <Button type="primary" onClick={handleCorrectWork}>
-                批改
-              </Button>
-            )}
+            <Button type="primary" onClick={handleCorrectWork}>
+              批改
+            </Button>
             {record.work_status === 1 && text && (
               <Button
                 onClick={handleReviewWork}

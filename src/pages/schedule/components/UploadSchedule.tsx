@@ -35,33 +35,10 @@ const UploadSchedule: React.FC = (props) => {
       onFinishFailed={onFinishFailed}
       autoComplete="off"
     >
-      <Form.Item name="file" rules={[{ required: true, message: '请上教学传进度文件' }]}>
-        <Space style={{ paddingLeft: '17px' }}>
-          <Upload {...loadProps}>
-            <Button icon={<UploadOutlined />}>文件上传</Button>
-          </Upload>
-          <span>(单个文件最大50M)</span>
-        </Space>
-      </Form.Item>
-      <Form.Item
-        label="编号"
-        name="number"
-        rules={[{ required: true, message: '请输入编号' }]}
-      >
+      <Form.Item label="标题" name="name" rules={[{ required: true, message: '请输入标题' }]}>
         <Input />
       </Form.Item>
-      <Form.Item
-        label="标题"
-        name="name"
-        rules={[{ required: true, message: '请输入标题' }]}
-      >
-        <Input />
-      </Form.Item>
-      <Form.Item
-        label="版本"
-        name="version"
-        rules={[{ required: true, message: '请输入版本' }]}
-      >
+      <Form.Item label="版本" name="version" rules={[{ required: true, message: '请输入版本' }]}>
         <Input />
       </Form.Item>
       <Form.Item
@@ -70,6 +47,14 @@ const UploadSchedule: React.FC = (props) => {
         rules={[{ required: true, message: '请输入负责人' }]}
       >
         <Input />
+      </Form.Item>
+      <Form.Item name="file" rules={[{ required: true, message: '请上教学传进度文件' }]}>
+        <Space style={{ paddingLeft: '17px' }}>
+          <Upload {...loadProps}>
+            <Button icon={<UploadOutlined />}>文件上传</Button>
+          </Upload>
+          <span>(单个文件最大50M)</span>
+        </Space>
       </Form.Item>
       <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
         <Space>

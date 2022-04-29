@@ -5,6 +5,7 @@ import { PlusCircleOutlined } from '@ant-design/icons';
 import tableStyles from '@/assets/styles/table.less';
 import { columnConfig, tableDataVal } from './constant';
 import { noop } from '@/utils/common';
+import { useAccess, Access } from 'umi';
 
 const { Search } = Input;
 const { TreeNode } = TreeSelect;
@@ -32,37 +33,70 @@ const KnowledgePoint: React.FC = () => {
       // })
     },
   };
+  const access = useAccess();
+  let colConfig: any[] = columnConfig;
 
-  let colConfig = [].concat(columnConfig, [
-    {
-      title: '操作',
-      align: 'center',
-      width: 150,
-      dataIndex: 'id',
-      render(text: string) {
-        return (
-          <Button
-            type="primary"
-            onClick={() => setVisible(true)}
-            style={{ backgroundColor: '#66AF77', border: 'none' }}
-          >
-            更新
-          </Button>
-        );
+  if (access.canAdmin) {
+    colConfig = [].concat(columnConfig, [
+      {
+        title: '操作',
+        align: 'center',
+        width: 150,
+        dataIndex: 'id',
+        render(text: string) {
+          return (
+            <Button
+              type="primary"
+              onClick={() => setVisible(true)}
+              style={{ backgroundColor: '#66AF77', border: 'none' }}
+            >
+              更新
+            </Button>
+          );
+        },
       },
-    },
-  ]);
+    ]);
+  }
 
   return (
     <PageContainer>
-      <Row>
-        <Col span={12}>
-          <Button icon={<PlusCircleOutlined />} type="primary" onClick={() => setVisible(true)}>
-            添加知识点
-          </Button>
+      <Row justify="space-between">
+        <Col span={4}>
+          {access.canAdmin && (
+            <Button icon={<PlusCircleOutlined />} type="primary" onClick={() => setVisible(true)}>
+              添加知识点
+            </Button>
+          )}
         </Col>
-        <Col span={6} push={6}>
-          <Search placeholder="请输入知识点名称" enterButton />
+        <Col>
+          <Space>
+            <span>教学目标检索：</span>
+            <TreeSelect
+              // showSearch
+              style={{ width: '300px' }}
+              value={teachingGoalId}
+              dropdownStyle={{ maxHeight: 350, overflow: 'auto' }}
+              placeholder="请选择教学目标"
+              allowClear
+              // treeDefaultExpandAll
+              onChange={() => {}}
+            >
+              <TreeNode selectable={false} value="1-1" title="教学大纲一(版本一)">
+                <TreeNode value={0} title="教学目标一" />
+                <TreeNode value={1} title="教学目标二" />
+              </TreeNode>
+              <TreeNode selectable={false} value="1-2" title="教学大纲一(版本二)">
+                <TreeNode value={2} title="教学目标一" />
+                <TreeNode value={3} title="教学目标二" />
+                <TreeNode value={4} title="教学目标三" />
+              </TreeNode>
+              <TreeNode selectable={false} value="3-1" title="教学大纲三(版本一)">
+                <TreeNode value={5} title="教学目标一" />
+                <TreeNode value={6} title="教学目标二" />
+                <TreeNode value={7} title="教学目标三" />
+              </TreeNode>
+            </TreeSelect>
+          </Space>
         </Col>
       </Row>
       <div className={tableStyles['table-wrap']}>

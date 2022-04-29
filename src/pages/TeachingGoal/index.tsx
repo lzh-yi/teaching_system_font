@@ -5,6 +5,7 @@ import { PlusCircleOutlined } from '@ant-design/icons';
 import tableStyles from '@/assets/styles/table.less';
 import { columnConfig, tableDataVal } from './constant';
 import { noop } from '@/utils/common';
+import { useAccess, Access } from 'umi';
 
 const { Search } = Input;
 const { TreeNode } = TreeSelect;
@@ -18,6 +19,7 @@ const TeachingGoal: React.FC = () => {
   const [upLoading, setUpLoading] = useState<boolean>(false);
   const [teachingGoalId, steTeachingGoalId] = useState<number | null>(null);
 
+  const access = useAccess();
   const pagination = {
     showSizeChanger: true,
     showQuickJumper: true,
@@ -32,37 +34,56 @@ const TeachingGoal: React.FC = () => {
       // })
     },
   };
-
-  let colConfig = [].concat(columnConfig, [
-    {
-      title: '操作',
-      align: 'center',
-      width: 150,
-      dataIndex: 'id',
-      render(text: string) {
-        return (
-          <Button
-            type="primary"
-            onClick={() => setVisible(true)}
-            style={{ backgroundColor: '#66AF77', border: 'none' }}
-          >
-            更新
-          </Button>
-        );
+  let colConfig: any[] = columnConfig;
+  if (access.canAdmin) {
+    colConfig = [].concat(columnConfig, [
+      {
+        title: '操作',
+        align: 'center',
+        width: 150,
+        dataIndex: 'id',
+        render(text: string) {
+          return (
+            <Button
+              type="primary"
+              onClick={() => setVisible(true)}
+              style={{ backgroundColor: '#66AF77', border: 'none' }}
+            >
+              更新
+            </Button>
+          );
+        },
       },
-    },
-  ]);
+    ]);
+  }
 
   return (
     <PageContainer>
-      <Row>
-        <Col span={12}>
-          <Button icon={<PlusCircleOutlined />} type="primary" onClick={() => setVisible(true)}>
-            添加教学目标
-          </Button>
+      <Row justify="space-between">
+        <Col span={4}>
+          {access.canAdmin && (
+            <Button icon={<PlusCircleOutlined />} type="primary" onClick={() => setVisible(true)}>
+              添加教学目标
+            </Button>
+          )}
         </Col>
-        <Col span={6} push={6}>
-          <Search placeholder="请输入教学目标名称" enterButton />
+        <Col>
+          <Space>
+            <span>教学大纲检索：</span>
+            <Select
+              showSearch
+              style={{ width: 200 }}
+              placeholder="请选择教学大纲"
+              optionFilterProp="children"
+            >
+              <Option value={1}>教学大纲一</Option>
+              <Option value={2}>教学大纲二</Option>
+              <Option value={3}>教学大纲三</Option>
+              <Option value={4}>教学大纲四</Option>
+              <Option value={5}>教学大纲五</Option>
+              <Option value={6}>教学大纲六</Option>
+            </Select>
+          </Space>
         </Col>
       </Row>
       <div className={tableStyles['table-wrap']}>
@@ -92,11 +113,18 @@ const TeachingGoal: React.FC = () => {
           autoComplete="off"
         >
           <Form.Item
-            label="教学目标名称"
+            label="教学名称"
             name="name"
             rules={[{ required: true, message: '请输入教学目标名称' }]}
           >
             <Input />
+          </Form.Item>
+          <Form.Item
+            label="教学内容"
+            name="content"
+            rules={[{ required: true, message: '请输入教学目标内容' }]}
+          >
+            <Input.TextArea />
           </Form.Item>
           <Form.Item
             label="教学大纲"
