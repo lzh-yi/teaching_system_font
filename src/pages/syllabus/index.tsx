@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import { Button, Col, Row, Table, Modal, Space, Input, Select } from 'antd';
 import tableStyles from '@/assets/styles/table.less';
@@ -6,6 +6,7 @@ import { columnConfig, tableDataVal } from './constant';
 import UploadSyllabus from '@/pages/syllabus/components/UploadSyllabus';
 import { useAccess, Access } from 'umi';
 import { PlusCircleOutlined } from '@ant-design/icons';
+import { teachingOutline } from '@/api/service';
 
 const { Search } = Input;
 const { Option } = Select;
@@ -62,6 +63,11 @@ const Syllabus: React.FC = () => {
       // })
     },
   };
+
+  // useEffect(async () => {
+  //   const res = await teachingOutline.getTeachingOutlineList();
+  //   console.log('res..............', res);
+  // }, []);
 
   return (
     <PageContainer>

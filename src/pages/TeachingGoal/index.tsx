@@ -113,14 +113,14 @@ const TeachingGoal: React.FC = () => {
           autoComplete="off"
         >
           <Form.Item
-            label="教学名称"
+            label="教学目标名称"
             name="name"
             rules={[{ required: true, message: '请输入教学目标名称' }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
-            label="教学内容"
+            label="教学目标内容"
             name="content"
             rules={[{ required: true, message: '请输入教学目标内容' }]}
           >

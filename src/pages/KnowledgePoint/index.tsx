@@ -125,19 +125,26 @@ const KnowledgePoint: React.FC = () => {
           onFinish={handleAddKnowPoint}
           autoComplete="off"
         >
-          <Form.Item
+          {/* <Form.Item
             label="编号"
             name="number"
             rules={[{ required: true, message: '请输入知识点编号' }]}
           >
             <Input />
-          </Form.Item>
+          </Form.Item> */}
           <Form.Item
             label="知识点名称"
             name="name"
             rules={[{ required: true, message: '请输入知识点名称' }]}
           >
             <Input />
+          </Form.Item>
+          <Form.Item
+            label="知识点内容"
+            name="content"
+            rules={[{ required: true, message: '请输入知识点内容' }]}
+          >
+            <Input.TextArea />
           </Form.Item>
           <Form.Item
             label="教学目标"
