@@ -76,12 +76,11 @@ const TeachingGoal: React.FC = () => {
               placeholder="请选择教学大纲"
               optionFilterProp="children"
             >
-              <Option value={1}>教学大纲一</Option>
-              <Option value={2}>教学大纲二</Option>
-              <Option value={3}>教学大纲三</Option>
-              <Option value={4}>教学大纲四</Option>
-              <Option value={5}>教学大纲五</Option>
-              <Option value={6}>教学大纲六</Option>
+              <Option value={1}>教学大纲一(版本一)</Option>
+              <Option value={2}>教学大纲三(版本一)</Option>
+              <Option value={3}>教学大纲三(版本二)</Option>
+              <Option value={4}>教学大纲四(版本一)</Option>
+              <Option value={5}>教学大纲五(版本一)</Option>
             </Select>
           </Space>
         </Col>

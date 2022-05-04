@@ -29,7 +29,7 @@ request.interceptors.response.use(
       localStorage.removeItem('token');
       history.push('/');
     }
-    return response;
+    return response.data;
   },
   (error) => {
     return Promise.reject(error);

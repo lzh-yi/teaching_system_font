@@ -147,6 +147,13 @@ const KnowledgePoint: React.FC = () => {
             <Input.TextArea />
           </Form.Item>
           <Form.Item
+            label="所属章节"
+            name="name"
+            rules={[{ required: true, message: '请输入知识点所属章节' }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
             label="教学目标"
             name="teaching_id"
             rules={[{ required: true, message: '请选择教学目标' }]}

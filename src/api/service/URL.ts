@@ -1,6 +1,10 @@
 const teachingOutline = {
   // 教学大纲列表
-  teachingOutlineList: `/proxyApi/teaching_outline/list`,
+  teachingOutlineList: '/api/teaching_outline/list',
+  // 下载教学大纲
+  downloadOutline: '/api/teaching_outline/download',
+  // 上传教学大纲
+  uploadOutline: '/api/teaching_outline/upload'
 };
 
 export default {

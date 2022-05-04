@@ -1,1 +1,3 @@
-export * as teachingOutline from './teachingOutline';
+import * as teachingOutline from './teachingOutline';
+
+export { teachingOutline };

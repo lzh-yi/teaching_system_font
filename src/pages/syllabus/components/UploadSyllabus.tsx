@@ -1,28 +1,31 @@
 import React, { useState } from 'react';
 import { Button, Form, Input, message, Space, Upload } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
+import dayjs from 'dayjs';
+import * as teachingOutline from '@/api/service/teachingOutline';
 
-const UploadSyllabus: React.FC = (props) => {
+const UploadSyllabus: React.FC = (props: any) => {
+  let fileName = '';
+  let filePath = '';
+
   const loadProps = {
     name: 'file',
-    action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
+    maxCount: 1,
+    action: '/api/file/upload',
     headers: {
       authorization: 'authorization-text',
     },
     onChange(info) {
-      if (info.file.status !== 'uploading') {
-        console.log(info.file, info.fileList);
-      }
       if (info.file.status === 'done') {
-        message.success(`${info.file.name} file uploaded successfully`);
-      } else if (info.file.status === 'error') {
-        message.error(`${info.file.name} file upload failed.`);
+        console.log(info);
+        message.success(`${info.file.name} 上传成功`);
+        fileName = info.file.response.data.fileName;
+        filePath = info.file.response.data.filePath;
       }
     },
   };
 
-  const { closeUploadModal } = props;
-
+  const { closeUploadModal, getTeachingOutlineList } = props;
   const [upLoading, setUpLoading] = useState<boolean>(false);
 
   return (
@@ -30,7 +33,7 @@ const UploadSyllabus: React.FC = (props) => {
       name="basic"
       labelCol={{ span: 5 }}
       wrapperCol={{ span: 16 }}
-      initialValues={{ remember: true }}
+      // initialValues={{ remember: true }}
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
       autoComplete="off"
@@ -44,7 +47,7 @@ const UploadSyllabus: React.FC = (props) => {
       </Form.Item> */}
       <Form.Item
         label="大纲标题"
-        name="name"
+        name="title"
         rules={[{ required: true, message: '请输入大纲标题' }]}
       >
         <Input />
@@ -63,8 +66,8 @@ const UploadSyllabus: React.FC = (props) => {
       >
         <Input />
       </Form.Item>
-      <Form.Item name="file" rules={[{ required: true, message: '请上传大纲文件' }]}>
-        <Space style={{ paddingLeft: '17px' }}>
+      <Form.Item name="file">
+        <Space style={{ paddingLeft: '17px', maxWidth: '100% !important' }}>
           <Upload {...loadProps}>
             <Button icon={<UploadOutlined />}>大纲上传</Button>
           </Upload>
@@ -84,13 +87,22 @@ const UploadSyllabus: React.FC = (props) => {
     </Form>
   );
 
-  function onFinish() {
+  async function onFinish(value: any) {
+    if (!value.fileName && !value.filePath) {
+      value.fileName = fileName;
+      value.filePath = filePath;
+    }
+    value.uploadingTime = dayjs().format('YYYY-MM-DD HH:mm:ss');
+    console.log('value....', value);
     setUpLoading(true);
-    setTimeout(() => {
-      setUpLoading(false);
+    // 开始上传
+    const res = await teachingOutline.uploadOutline(value);
+    if (res && res.code === 200) {
       closeUploadModal();
       message.success('上传成功');
-    }, 1000);
+      setUpLoading(false);
+      getTeachingOutlineList();
+    }
   }
 
   function onFinishFailed() {}

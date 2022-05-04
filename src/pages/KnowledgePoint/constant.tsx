@@ -6,6 +6,7 @@ export type KnowledgePointColType = {
   // teaching_id: number;
   // teaching_goal_name: string;
   support_strength: string;
+  chapter: string;
 };
 
 export const columnConfig = [
@@ -33,6 +34,12 @@ export const columnConfig = [
     width: 100,
     dataIndex: 'support_strength',
   },
+  {
+    title: '所属章节',
+    align: 'center',
+    width: 100,
+    dataIndex: 'chapter',
+  },
 ];
 
 export const tableDataVal: KnowledgePointColType[] = [
@@ -42,6 +49,7 @@ export const tableDataVal: KnowledgePointColType[] = [
     name: '知识点一',
     content: '知识点内容',
     support_strength: '高',
+    chapter: '第一章节',
   },
   {
     id: 2,
@@ -49,6 +57,7 @@ export const tableDataVal: KnowledgePointColType[] = [
     name: '知识点二',
     content: '知识点内容',
     support_strength: '中',
+    chapter: '第一章节',
   },
   {
     id: 4,
@@ -56,5 +65,6 @@ export const tableDataVal: KnowledgePointColType[] = [
     name: '知识点五',
     content: '知识点内容',
     support_strength: '低',
+    chapter: '第一章节',
   },
 ];
