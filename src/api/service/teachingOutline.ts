@@ -25,3 +25,12 @@ export const uploadOutline = (data: any) => {
     data,
   });
 };
+
+/** 更新教学大纲 */
+export const updateOutline = (data: any) => {
+  return request({
+    method: 'post',
+    url: URL.updateOutline,
+    data,
+  });
+};

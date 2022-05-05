@@ -21,8 +21,10 @@ const Syllabus: React.FC = () => {
   const [totalData, setTotalData] = useState<number>(0);
   const [tableLoading, setTableLoading] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
+  const [updateVisible, setUpdateVisible] = useState<boolean>(false);
   const [tableDataVal, setTableDataVal] = useState<any[]>([]);
   const [selectData, setSelectData] = useState<any[]>([]);
+  const [initialValues, setInitialValues] = useState<{}>({});
 
   const access = useAccess();
   let colConfig = [].concat(columnConfig, [
@@ -34,22 +36,22 @@ const Syllabus: React.FC = () => {
       render(value: number, record: any) {
         return (
           <Space>
-            {access.canAdmin && (
-              <Button
-                type="primary"
-                onClick={() =>
-                  (window.location.href = `http://localhost:8889/api/file/download?file_path=${record.filePath}&file_name=${record.fileName}`)
-                }
-              >
-                下载
-              </Button>
-            )}
+            {/* {access.canAdmin && ( */}
+            <Button
+              type="primary"
+              onClick={() =>
+                (window.location.href = `http://localhost:8889/api/file/download?file_path=${record.filePath}&file_name=${record.fileName}`)
+              }
+            >
+              下载
+            </Button>
+            {/* )} */}
             {/* 学生端不能下载，只能在线查看 */}
-            {access.canUser && (
+            {/* {access.canUser && (
               <Button style={{ backgroundColor: '#66AF77', border: 'none' }} type="primary">
                 查看
               </Button>
-            )}
+            )} */}
             {access.canAdmin && (
               <Button
                 type="primary"
@@ -105,7 +107,6 @@ const Syllabus: React.FC = () => {
               placeholder="请选择教学大纲"
               optionFilterProp="children"
               onChange={(value: string) => {
-                console.log('value', value);
                 setSearchCondition({
                   ...searchCondition,
                   title: value,
@@ -137,20 +138,47 @@ const Syllabus: React.FC = () => {
       <Modal
         visible={visible}
         maskClosable={false}
-        title="上传/更新教学大纲"
+        title="上传教学大纲"
         onCancel={() => setVisible(false)}
         footer={null}
+        destroyOnClose={true}
       >
         <UploadSyllabus
           closeUploadModal={() => setVisible(false)}
           getTeachingOutlineList={getTeachingOutlineList}
         />
       </Modal>
+
+      <Modal
+        visible={updateVisible}
+        maskClosable={false}
+        title="更新教学大纲"
+        onCancel={() => setUpdateVisible(false)}
+        footer={null}
+        destroyOnClose={true}
+      >
+        <UploadSyllabus
+          isUpdate={true}
+          initialValues={initialValues}
+          closeUploadModal={() => setUpdateVisible(false)}
+          getTeachingOutlineList={getTeachingOutlineList}
+        />
+      </Modal>
     </PageContainer>
   );
 
-  function updateOutLine(outLineId: number) {
-    setVisible(true);
+  async function updateOutLine(outLineId: number) {
+    // 获取指定 id 的教学大纲
+    const res = await teachingOutline.getTeachingOutlineList({
+      ...searchCondition,
+      title: '',
+      id: outLineId,
+    });
+    if (res && res.code === 200) {
+      // console.log(res.data[0]);
+      setInitialValues(res.data[0]);
+    }
+    setUpdateVisible(true);
   }
 
   async function getTeachingOutlineList() {

@@ -1,23 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Col, Row, Button, Input, Table, Modal, Form, Space, TreeSelect, Select } from 'antd';
+import {
+  Col,
+  Row,
+  Button,
+  Input,
+  Table,
+  Modal,
+  Form,
+  Space,
+  TreeSelect,
+  Select,
+  message,
+} from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
 import tableStyles from '@/assets/styles/table.less';
-import { columnConfig, tableDataVal } from './constant';
+import { columnConfig } from './constant';
 import { noop } from '@/utils/common';
 import { useAccess, Access } from 'umi';
+import { teachingOutline, teachingGoal } from '@/api/service';
 
 const { Search } = Input;
 const { TreeNode } = TreeSelect;
 const { Option } = Select;
 
 const TeachingGoal: React.FC = () => {
-  const [searchCondition, setSearchCondition] = useState({ page: 1, pageSize: 20 });
+  const [searchCondition, setSearchCondition] = useState({
+    page: 1,
+    pageSize: 20,
+    teachingGoalId: -1,
+    id: -1,
+  });
+
   const [totalData, setTotalData] = useState<number>(0);
   const [tableLoading, setTableLoading] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
   const [upLoading, setUpLoading] = useState<boolean>(false);
-  const [teachingGoalId, steTeachingGoalId] = useState<number | null>(null);
+  const [selectData, setSelectData] = useState<any[]>([]);
+  const [tableDataVal, setTableDataVal] = useState<any[]>([]);
+  const [updateVisible, setUpdateVisible] = useState<boolean>(false);
+  const [initialValues, setInitialValues] = useState<{}>({});
 
   const access = useAccess();
   const pagination = {
@@ -27,11 +49,12 @@ const TeachingGoal: React.FC = () => {
     pageSize: searchCondition?.pageSize,
     total: totalData,
     showTotal: (total: number) => `共${total}条记录`,
-    onChange: (page: any, size: number) => {
-      // setSearchCondition({
-      //   page,
-      //   page_size: size
-      // })
+    onChange: (page: any, pageSize: number) => {
+      setSearchCondition({
+        ...searchCondition,
+        page,
+        pageSize,
+      });
     },
   };
   let colConfig: any[] = columnConfig;
@@ -42,11 +65,11 @@ const TeachingGoal: React.FC = () => {
         align: 'center',
         width: 150,
         dataIndex: 'id',
-        render(text: string) {
+        render(value: number) {
           return (
             <Button
               type="primary"
-              onClick={() => setVisible(true)}
+              onClick={() => update(value)}
               style={{ backgroundColor: '#66AF77', border: 'none' }}
             >
               更新
@@ -56,6 +79,14 @@ const TeachingGoal: React.FC = () => {
       },
     ]);
   }
+
+  useEffect(() => {
+    getTeachingOutlineList();
+  }, []);
+
+  useEffect(() => {
+    getTeachingGoalList();
+  }, [searchCondition]);
 
   return (
     <PageContainer>
@@ -72,15 +103,21 @@ const TeachingGoal: React.FC = () => {
             <span>教学大纲检索：</span>
             <Select
               showSearch
-              style={{ width: 200 }}
+              style={{ width: 250 }}
               placeholder="请选择教学大纲"
               optionFilterProp="children"
+              onChange={(value: number) => {
+                setSearchCondition({
+                  ...searchCondition,
+                  teachingGoalId: value,
+                });
+              }}
             >
-              <Option value={1}>教学大纲一(版本一)</Option>
-              <Option value={2}>教学大纲三(版本一)</Option>
-              <Option value={3}>教学大纲三(版本二)</Option>
-              <Option value={4}>教学大纲四(版本一)</Option>
-              <Option value={5}>教学大纲五(版本一)</Option>
+              {selectData.map((item) => (
+                <Option id={item.id} value={item.id}>
+                  {item.title}
+                </Option>
+              ))}
             </Select>
           </Space>
         </Col>
@@ -99,9 +136,10 @@ const TeachingGoal: React.FC = () => {
       <Modal
         visible={visible}
         maskClosable={false}
-        title="添加/更新教学目标"
+        title="添加教学目标"
         onCancel={() => setVisible(false)}
         footer={null}
+        destroyOnClose={true}
       >
         <Form
           name="basic"
@@ -113,7 +151,7 @@ const TeachingGoal: React.FC = () => {
         >
           <Form.Item
             label="教学目标名称"
-            name="name"
+            name="title"
             rules={[{ required: true, message: '请输入教学目标名称' }]}
           >
             <Input />
@@ -127,13 +165,15 @@ const TeachingGoal: React.FC = () => {
           </Form.Item>
           <Form.Item
             label="教学大纲"
-            name="outline_id"
+            name="teachingOutlineId"
             rules={[{ required: true, message: '请选择教学大纲' }]}
           >
-            <Select style={{ width: 150 }} onChange={noop}>
-              <Option value={2}>教学大纲一</Option>
-              <Option value={1}>教学大纲二</Option>
-              <Option value={0}>教学大纲三</Option>
+            <Select style={{ width: 250 }} onChange={noop}>
+              {selectData.map((item) => (
+                <Option id={item.id} value={item.id}>
+                  {item.title}
+                </Option>
+              ))}
             </Select>
           </Form.Item>
           <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
@@ -148,17 +188,130 @@ const TeachingGoal: React.FC = () => {
           </Form.Item>
         </Form>
       </Modal>
+
+      <Modal
+        visible={updateVisible}
+        maskClosable={false}
+        title="更新教学目标"
+        onCancel={() => setUpdateVisible(false)}
+        footer={null}
+        destroyOnClose={true}
+      >
+        <Form
+          name="basic"
+          labelCol={{ span: 5 }}
+          wrapperCol={{ span: 16 }}
+          onFinish={handleUpdateKnowPoint}
+          autoComplete="off"
+          initialValues={initialValues}
+        >
+          <Form.Item
+            label="教学目标名称"
+            name="title"
+            rules={[{ required: true, message: '请输入教学目标名称' }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="教学目标内容"
+            name="content"
+            rules={[{ required: true, message: '请输入教学目标内容' }]}
+          >
+            <Input.TextArea />
+          </Form.Item>
+          <Form.Item
+            label="教学大纲"
+            name="teachingOutlineId"
+            rules={[{ required: true, message: '请选择教学大纲' }]}
+          >
+            <Select style={{ width: 250 }} onChange={noop}>
+              {selectData.map((item) => (
+                <Option id={item.id} value={item.id}>
+                  {item.title}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+            <Space>
+              <Button type="primary" htmlType="submit" loading={upLoading}>
+                添加
+              </Button>
+              <Button loading={upLoading} onClick={() => setUpdateVisible(false)}>
+                取消
+              </Button>
+            </Space>
+          </Form.Item>
+        </Form>
+      </Modal>
     </PageContainer>
   );
 
-  function updateKnowledgePoint() {}
-  function handleAddKnowPoint(value: any) {
+  async function update(teachingGoalId: number) {
+    const res = await teachingGoal.getTeachingGoalList({
+      ...searchCondition,
+      id: teachingGoalId,
+    });
+    if (res && res.code === 200) {
+      // console.log(res.data[0]);
+      setInitialValues(res.data[0]);
+      setUpdateVisible(true);
+    }
+  }
+
+  async function handleUpdateKnowPoint(value: any) {
     setUpLoading(true);
-    setTimeout(() => {
-      console.log(value);
+    value.id = initialValues.id;
+    const res = await teachingGoal.updateTeachingGoal(value);
+    if (res && res.code === 200) {
+      message.success('修改成功');
+      setUpLoading(false);
+      setUpdateVisible(false);
+      getTeachingGoalList();
+    }
+  }
+
+  async function handleAddKnowPoint(value: any) {
+    setUpLoading(true);
+    // console.log('value...', value);
+    const res = await teachingGoal.addTeachingGoal(value);
+    if (res && res.code === 200) {
+      message.success('添加成功');
       setUpLoading(false);
       setVisible(false);
-    }, 1000);
+      getTeachingGoalList();
+    }
+  }
+
+  async function getTeachingOutlineList() {
+    const res = await teachingOutline.getTeachingOutlineList({
+      page: 1,
+      pageSize: 1000,
+      id: -1,
+    });
+    if (res && res.code === 200) {
+      // 构造出下拉列表需要的数据
+      if (selectData.length !== 0) return;
+      const result: { id: number; title: string }[] = res.data.map((item: any) => {
+        return {
+          id: item.id,
+          title: `${item.title}(${item.version})`,
+        };
+      });
+      setSelectData(result);
+    }
+  }
+
+  async function getTeachingGoalList() {
+    setTableLoading(true);
+    const res = await teachingGoal.getTeachingGoalList({
+      ...searchCondition,
+    });
+    if (res && res.code === 200) {
+      setTableLoading(false);
+      setTableDataVal(res.data);
+      setTotalData(res.total);
+    }
   }
 };
 

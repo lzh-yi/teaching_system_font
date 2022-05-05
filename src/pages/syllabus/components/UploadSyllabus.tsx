@@ -17,7 +17,6 @@ const UploadSyllabus: React.FC = (props: any) => {
     },
     onChange(info) {
       if (info.file.status === 'done') {
-        console.log(info);
         message.success(`${info.file.name} 上传成功`);
         fileName = info.file.response.data.fileName;
         filePath = info.file.response.data.filePath;
@@ -25,7 +24,7 @@ const UploadSyllabus: React.FC = (props: any) => {
     },
   };
 
-  const { closeUploadModal, getTeachingOutlineList } = props;
+  const { closeUploadModal, getTeachingOutlineList, initialValues = {}, isUpdate = false } = props;
   const [upLoading, setUpLoading] = useState<boolean>(false);
 
   return (
@@ -33,10 +32,10 @@ const UploadSyllabus: React.FC = (props: any) => {
       name="basic"
       labelCol={{ span: 5 }}
       wrapperCol={{ span: 16 }}
-      // initialValues={{ remember: true }}
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
       autoComplete="off"
+      initialValues={initialValues}
     >
       {/* <Form.Item
         label="大纲编号"
@@ -88,15 +87,26 @@ const UploadSyllabus: React.FC = (props: any) => {
   );
 
   async function onFinish(value: any) {
-    if (!value.fileName && !value.filePath) {
+    if (fileName && filePath) {
       value.fileName = fileName;
       value.filePath = filePath;
+    } else {
+      value.fileName = initialValues.fileName;
+      value.filePath = initialValues.filePath;
+    }
+    if (initialValues.id) {
+      value.id = initialValues.id;
     }
     value.uploadingTime = dayjs().format('YYYY-MM-DD HH:mm:ss');
-    console.log('value....', value);
+    // console.log('value....', value);
     setUpLoading(true);
     // 开始上传
-    const res = await teachingOutline.uploadOutline(value);
+    let res = null;
+    if (isUpdate) {
+      res = await teachingOutline.updateOutline(value);
+    } else {
+      res = await teachingOutline.uploadOutline(value);
+    }
     if (res && res.code === 200) {
       closeUploadModal();
       message.success('上传成功');
