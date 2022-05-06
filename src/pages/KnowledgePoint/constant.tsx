@@ -10,61 +10,51 @@ export type KnowledgePointColType = {
 };
 
 export const columnConfig = [
-  {
-    title: 'id',
-    align: 'center',
-    width: 100,
-    dataIndex: 'id',
-  },
+  // {
+  //   title: 'id',
+  //   align: 'center',
+  //   width: 100,
+  //   dataIndex: 'id',
+  // },
   {
     title: '知识点名称',
     align: 'center',
     width: 100,
-    dataIndex: 'name',
+    dataIndex: 'title',
   },
   {
     title: '知识点内容',
     align: 'center',
-    width: 100,
+    width: 200,
     dataIndex: 'content',
   },
   {
     title: '支撑强度',
     align: 'center',
     width: 100,
-    dataIndex: 'support_strength',
+    dataIndex: 'supportStrength',
+    render(value: string) {
+      let result = null;
+      switch (value) {
+        case 'high':
+          result = <p>高</p>;
+          break;
+        case 'middle':
+          result = <p>中</p>;
+          break;
+        case 'low':
+          result = <p>低</p>;
+          break;
+        default:
+          break;
+      }
+      return result;
+    },
   },
   {
     title: '所属章节',
     align: 'center',
     width: 100,
     dataIndex: 'chapter',
-  },
-];
-
-export const tableDataVal: KnowledgePointColType[] = [
-  {
-    id: 1,
-    // number: '1.1',
-    name: '知识点一',
-    content: '知识点内容',
-    support_strength: '高',
-    chapter: '第一章节',
-  },
-  {
-    id: 2,
-    // number: '1.2',
-    name: '知识点二',
-    content: '知识点内容',
-    support_strength: '中',
-    chapter: '第一章节',
-  },
-  {
-    id: 4,
-    // number: '1.5',
-    name: '知识点五',
-    content: '知识点内容',
-    support_strength: '低',
-    chapter: '第一章节',
   },
 ];

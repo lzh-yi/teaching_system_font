@@ -30,8 +30,22 @@ const teachingGoal = {
   updateTeachingGoal: '/api/teaching_goal/update',
 };
 
+/** 知识点 */
+const KnowledgePoint = {
+  // 下拉列表数据
+  knowledgePointSelectData: '/api/knowledge_point/select_data',
+  // 添加知识点
+  addKnowledgePoint: '/api/knowledge_point/add',
+  // 获取知识点列表
+  knowledgePointList: '/api/knowledge_point/list',
+  // 更新知识点
+  updateKnowledgePoint: '/api/knowledge_point/update',
+
+};
+
 export default {
   ...teachingOutline,
   ...teachingSchedule,
   ...teachingGoal,
+  ...KnowledgePoint,
 };

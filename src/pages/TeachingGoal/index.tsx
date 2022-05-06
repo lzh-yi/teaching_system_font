@@ -28,7 +28,7 @@ const TeachingGoal: React.FC = () => {
   const [searchCondition, setSearchCondition] = useState({
     page: 1,
     pageSize: 20,
-    teachingGoalId: -1,
+    teachingOutlineId: -1,
     id: -1,
   });
 
@@ -109,7 +109,7 @@ const TeachingGoal: React.FC = () => {
               onChange={(value: number) => {
                 setSearchCondition({
                   ...searchCondition,
-                  teachingGoalId: value,
+                  teachingOutlineId: value,
                 });
               }}
             >
