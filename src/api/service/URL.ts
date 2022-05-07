@@ -40,7 +40,16 @@ const KnowledgePoint = {
   knowledgePointList: '/api/knowledge_point/list',
   // 更新知识点
   updateKnowledgePoint: '/api/knowledge_point/update',
+};
 
+/** 题组 */
+const GroupWork = {
+  // 添加题组
+  addGroupWork: '/api/group_work/add',
+  // 题组列表
+  groupWorkList: '/api/group_work/list',
+  // 更新题组
+  updateGroupWork: '/api/group_work/update',
 };
 
 export default {
@@ -48,4 +57,5 @@ export default {
   ...teachingSchedule,
   ...teachingGoal,
   ...KnowledgePoint,
+  ...GroupWork,
 };

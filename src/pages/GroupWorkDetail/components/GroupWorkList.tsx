@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Row,
   Col,
@@ -22,6 +22,8 @@ import {
 } from '@ant-design/icons';
 import CreateSelectWork from '@/pages/GroupWorkDetail/components/CreateSelectWork';
 import CreateSubjectiveWork from '@/pages/GroupWorkDetail/components/CreateSubjectiveWork';
+import { GroupWork } from '@/api/service';
+import dayjs from 'dayjs';
 
 type workItemType = {
   id: number;
@@ -116,9 +118,29 @@ const GroupWorkDetail: React.FC = (props: any) => {
       type: 1,
     },
   ]);
+  const [initialValues, setInitialValues] = useState<{}>({});
+  const [workGroupObj, setWorkGroupObj] = useState<any>({});
+
+  useEffect(() => {
+    getGroupWorkInfo();
+  }, []);
 
   // 标记当前习题组是否是未发布状态
-  const { workGroupStatus } = props;
+  const { workGroupStatus, workId } = props;
+  const bgColor = {
+    '0': {
+      color: '#C6CED6',
+      label: '未发布',
+    },
+    '1': {
+      color: '#0253D9',
+      label: '进行中',
+    },
+    '2': {
+      color: '#E53434',
+      label: '已截止',
+    },
+  };
 
   return (
     <div>
@@ -127,13 +149,13 @@ const GroupWorkDetail: React.FC = (props: any) => {
           <Row>
             <Col span={10}>
               <Space>
-                <div className={styles['title']}>Java对象练习</div>
+                <div className={styles['title']}>{workGroupObj.name}</div>
                 <Button
                   shape="round"
                   size="small"
-                  style={{ backgroundColor: '#C6CED6', color: 'white' }}
+                  style={{ backgroundColor: bgColor[workGroupObj.status]?.color, color: 'white' }}
                 >
-                  未发布
+                  {bgColor[workGroupObj.status]?.label}
                 </Button>
               </Space>
             </Col>
@@ -142,18 +164,20 @@ const GroupWorkDetail: React.FC = (props: any) => {
             <Col>
               <Space align="center">
                 <Button type="primary" shape="round" size="small">
-                  简单
+                  {workGroupObj.difficultyLevel}
                 </Button>
-                <span style={{ color: '#99B5D7' }}>建议时长：90分钟</span>
+                <span style={{ color: '#99B5D7' }}>
+                  建议时长：{workGroupObj.suggestFinishTime}分钟
+                </span>
               </Space>
             </Col>
           </Row>
-          <div style={{ marginTop: '10px' }}>习题描述：该组习题主要是熟悉Java的类机制...</div>
+          <div style={{ marginTop: '10px' }}>习题描述：{workGroupObj.description}</div>
         </Col>
         {workGroupStatus == '0' && (
           <Col span={3}>
             <Button
-              onClick={() => setPublishVisible(true)}
+              onClick={() => publishWorkGroup(workGroupObj.id)}
               icon={<FieldTimeOutlined />}
               type="primary"
             >
@@ -341,6 +365,7 @@ const GroupWorkDetail: React.FC = (props: any) => {
         visible={publishVisible}
         onCancel={() => setPublishVisible(false)}
         footer={null}
+        destroyOnClose={true}
       >
         <div>
           <div className={styles['publish-modal-top']}>
@@ -398,6 +423,31 @@ const GroupWorkDetail: React.FC = (props: any) => {
     </div>
   );
 
+  async function getGroupWorkInfo() {
+    const res = await GroupWork.groupWorkList({
+      page: 1,
+      pageSize: 100,
+      id: workId,
+      name: '',
+    });
+    if (res && res.code === 200) {
+      setWorkGroupObj(res.data[0]);
+    }
+  }
+
+  async function publishWorkGroup(id: number) {
+    const res = await GroupWork.groupWorkList({
+      page: 1,
+      pageSize: 100,
+      id,
+      name: '',
+    });
+    if (res && res.code === 200) {
+      setInitialValues(res.data[0]);
+      setPublishVisible(true);
+    }
+  }
+
   function handleEditSelectWork() {
     setSelectWorkVisible(true);
   }
@@ -413,13 +463,21 @@ const GroupWorkDetail: React.FC = (props: any) => {
       }, 0);
   }
 
-  function publishWork() {
+  async function publishWork(value: any) {
     setUpLoading(true);
-    setTimeout(() => {
+    value.status = '1';
+    value.publishTime = dayjs(value.publishTime).format('YYYY-MM-DD HH:mm:ss');
+    value.deadlineTime = dayjs(value.deadlineTime).format('YYYY-MM-DD HH:mm:ss');
+    const res = await GroupWork.updateGroupWork({
+      ...initialValues,
+      ...value,
+    });
+    if (res && res.code === 200) {
       setUpLoading(false);
-      setPublishVisible(false);
       message.success('发布成功');
-    }, 2000);
+      setPublishVisible(false);
+      window.location.reload();
+    }
   }
 
   function onFinishFailed() {}

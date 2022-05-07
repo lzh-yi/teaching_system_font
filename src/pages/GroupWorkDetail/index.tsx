@@ -11,6 +11,7 @@ const { TabPane } = Tabs;
 const GroupWorkDetail: React.FC = () => {
   // 标记当前习题组是否是未发布状态
   const workGroupStatus = useLocation().query?.work_status;
+  const workId = useLocation().query?.work_id;
 
   return (
     <PageContainer>
@@ -19,7 +20,7 @@ const GroupWorkDetail: React.FC = () => {
           <Col span={24}>
             <Tabs defaultActiveKey="1" onChange={onTabChange}>
               <TabPane tab="作业列表" key="1">
-                <GroupWorkList workGroupStatus={workGroupStatus} />
+                <GroupWorkList workGroupStatus={workGroupStatus} workId={workId} />
               </TabPane>
               {Number(workGroupStatus) !== 0 && (
                 <TabPane tab="完成情况" key="2">
