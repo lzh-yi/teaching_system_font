@@ -63,6 +63,9 @@ const GroupWork: React.FC = () => {
               <TabPane tab="已提交" key="3">
                 <WorkTabPane workTabArr={workTabArr} />
               </TabPane>
+              <TabPane tab="已截止" key="4">
+                <WorkTabPane workTabArr={workTabArr} />
+              </TabPane>
             </Tabs>
           </Col>
         </Row>

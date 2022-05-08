@@ -385,6 +385,7 @@ const KnowledgePoint: React.FC = () => {
       setVisible(false);
       setTotalData(res.total);
       message.success('添加成功');
+      getKnowledgePointList();
     }
   }
 };

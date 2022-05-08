@@ -50,6 +50,16 @@ const GroupWork = {
   groupWorkList: '/api/group_work/list',
   // 更新题组
   updateGroupWork: '/api/group_work/update',
+  // 下拉列表数据
+  knowledgePointSelectDataByGroup: '/api/group_work/select_data',
+};
+
+/** 习题 */
+const exercise = {
+  // 添加习题
+  addExercise: '/api/exercise/add',
+  // 习题列表
+  exerciseList: '/api/exercise/list',
 };
 
 export default {
@@ -58,4 +68,5 @@ export default {
   ...teachingGoal,
   ...KnowledgePoint,
   ...GroupWork,
+  ...exercise,
 };

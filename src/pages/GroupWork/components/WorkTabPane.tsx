@@ -75,7 +75,9 @@ const WorkTabPane: React.FC = (props: any) => {
             <Col
               span={18}
               onClick={() =>
-                history.push(`/group_work/detail?work_status=${item.status}&work_id=${item.id}`)
+                history.push(
+                  `/group_work/detail?work_status=${item.status}&work_id=${item.id}&outline_id=${item.teachingOutlineId}`,
+                )
               }
             >
               <div className={styles['status-name']}>

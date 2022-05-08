@@ -24,3 +24,11 @@ export const updateGroupWork = (data: any) => {
     data,
   });
 };
+
+export const knowledgePointSelectData = (data: any) => {
+  return request({
+    method: 'post',
+    url: URL.knowledgePointSelectDataByGroup,
+    data,
+  });
+};
