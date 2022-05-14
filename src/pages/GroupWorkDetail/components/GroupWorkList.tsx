@@ -28,6 +28,7 @@ import {
   knowledgePoint as knowledgePointUtils,
 } from '@/api/service';
 import dayjs from 'dayjs';
+import { history } from 'umi';
 
 type workItemType = {
   id: number;
@@ -467,10 +468,19 @@ const GroupWorkDetail: React.FC = (props: any) => {
       ...value,
     });
     if (res && res.code === 200) {
-      setUpLoading(false);
-      message.success('发布成功');
-      setPublishVisible(false);
-      window.location.reload();
+      // 为每个学生创建一条数据
+      const result = await GroupWork.insertCompleteList({
+        workId: initialValues.id,
+        submitStatus: '0',
+      });
+
+      if (result && result.code === 200) {
+        setUpLoading(false);
+        message.success('发布成功');
+        setPublishVisible(false);
+        // window.location.reload();
+        history.push(`/group_work`);
+      }
     }
   }
 

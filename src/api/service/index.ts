@@ -4,5 +4,18 @@ import * as teachingGoal from './teachingGoal';
 import * as knowledgePoint from './KnowledgePoint';
 import * as GroupWork from './GroupWork';
 import * as Exercise from './exercise';
+import * as UserUtils from './user';
+import * as workStatistics from './statistics';
+import * as exerciseComplete from './exerciseComplete';
 
-export { teachingOutline, teachingSchedule, teachingGoal, knowledgePoint, GroupWork, Exercise };
+export {
+  teachingOutline,
+  teachingSchedule,
+  teachingGoal,
+  knowledgePoint,
+  GroupWork,
+  Exercise,
+  UserUtils,
+  workStatistics,
+  exerciseComplete,
+};

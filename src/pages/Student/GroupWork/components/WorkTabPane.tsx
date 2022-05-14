@@ -2,11 +2,12 @@ import { Button, Col, Empty, Input, Row, Space } from 'antd';
 import React, { useState } from 'react';
 import styles from './index.less';
 import { history } from 'umi';
+import dayjs from 'dayjs';
 
 const { Search } = Input;
 
 const WorkTabPane: React.FC = (props: any) => {
-  const { workTabArr } = props;
+  const { workTabArr = [] } = props;
 
   const bgColor = {
     '0': {
@@ -14,7 +15,7 @@ const WorkTabPane: React.FC = (props: any) => {
       label: '进行中',
     },
     '1': {
-      color: '#66AF77',
+      color: '#65AF76',
       label: '已提交',
     },
   };
@@ -22,15 +23,19 @@ const WorkTabPane: React.FC = (props: any) => {
   if (Array.isArray(workTabArr) && workTabArr.length > 0) {
     const workList = workTabArr.map((item) => {
       return (
-        <div key={item.id} className={styles['item-wrap']}>
+        <div key={item?.workstatistics?.id} className={styles['item-wrap']}>
           <Row>
             <Col
               span={18}
               onClick={() => {
-                if (item.status === 1)
-                  history.push(`/student/group_work/detail?work_status=${item.status}`);
-                if (item.status === 0)
-                  history.push(`/student/group_work/doing?work_status=${item.status}`);
+                if (item?.workstatistics?.submitStatus === '1')
+                  history.push(
+                    `/student/group_work/detail?work_status=${item?.workstatistics?.submitStatus}&work_group=${item?.workGroup?.id}&work_statistics=${item?.workstatistics?.id}`,
+                  );
+                if (item?.workstatistics?.submitStatus === '0')
+                  history.push(
+                    `/student/group_work/doing?work_status=${item?.workstatistics?.submitStatus}&work_group=${item?.workGroup?.id}&work_statistics=${item?.workstatistics?.id}`,
+                  );
               }}
             >
               <div className={styles['status-name']}>
@@ -39,20 +44,30 @@ const WorkTabPane: React.FC = (props: any) => {
                     <Button
                       shape="round"
                       size="small"
-                      style={{ backgroundColor: bgColor[item.status].color, color: 'white' }}
+                      style={{
+                        backgroundColor: bgColor[item?.workstatistics?.submitStatus]?.color,
+                        color: 'white',
+                      }}
                     >
-                      {bgColor[item.status].label}
+                      {bgColor[item?.workstatistics?.submitStatus]?.label}
                     </Button>
-                    <span style={{ fontWeight: 'bold', fontSize: '16px' }}>{item.name}</span>
+                    <span style={{ fontWeight: 'bold', fontSize: '16px' }}>
+                      {item?.workGroup?.name}
+                    </span>
                   </Space>
                 </div>
                 <div>
                   <Space align="center">
                     {/* <p style={{ fontSize: '13px' }}>{item.author}</p> */}
                     <p style={{ color: '#BBBBBB' }}>
-                      <span>发布时间 2022-04-24 14:50</span>
+                      <span>
+                        发布时间 {dayjs(item?.workGroup?.publishTime).format('YYYY-MM-DD HH:mm:ss')}
+                      </span>
                       &nbsp;&nbsp;&nbsp;&nbsp;
-                      <span>截止时间 2022-04-28 14:50</span>
+                      <span>
+                        截止时间{' '}
+                        {dayjs(item?.workGroup?.deadlineTime).format('YYYY-MM-DD HH:mm:ss')}
+                      </span>
                     </p>
                   </Space>
                 </div>
@@ -64,11 +79,11 @@ const WorkTabPane: React.FC = (props: any) => {
     });
     return (
       <div>
-        <Row style={{ marginBottom: '15px' }}>
+        {/* <Row style={{ marginBottom: '15px' }}>
           <Col push={18} span={6}>
             <Search placeholder="请输入习题分组名称" enterButton />
           </Col>
-        </Row>
+        </Row> */}
         <Space direction="vertical" size={15} style={{ width: '100%', paddingBottom: '20px' }}>
           {workList}
         </Space>

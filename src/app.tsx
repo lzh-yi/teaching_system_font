@@ -8,6 +8,7 @@ import Footer from '@/components/Footer';
 import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
 import { BookOutlined, LinkOutlined } from '@ant-design/icons';
 import defaultSettings from '../config/defaultSettings';
+import { getGlobalUser } from '@/constant/index';
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -24,11 +25,14 @@ export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
   currentUser?: API.CurrentUser;
   loading?: boolean;
-  fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
+  fetchUserInfo?: (access: string) => Promise<API.CurrentUser | undefined>;
 }> {
-  const fetchUserInfo = async () => {
+  const fetchUserInfo = async (access: string) => {
     try {
-      const msg = await queryCurrentUser();
+      // 获取用户信息
+      const msg = await queryCurrentUser({ access });
+      msg.data.name = getGlobalUser().userName;
+      msg.data.access = getGlobalUser().access;
       return msg.data;
     } catch (error) {
       history.push(loginPath);
@@ -37,7 +41,7 @@ export async function getInitialState(): Promise<{
   };
   // 如果不是登录页面，执行
   if (history.location.pathname !== loginPath) {
-    const currentUser = await fetchUserInfo();
+    const currentUser = await fetchUserInfo('');
     return {
       fetchUserInfo,
       currentUser,

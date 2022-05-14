@@ -20,16 +20,22 @@ const { ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION } = process.env;
  * current user access， if is '', user need login
  * 如果是 pro 的预览，默认是有权限的
  */
-let access = ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION === 'site' ? 'admin' : '';
+// let access = ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION === 'site' ? 'admin' : '';
+let access = '';
 
-const getAccess = () => {
+export const getAccess = () => {
   return access;
+};
+
+export const setAccess = (status: string) => {
+  access = status;
 };
 
 // 代码中会兼容本地 service mock 以及部署站点的静态数据
 export default {
   // 支持值为 Object 和 Array
-  'GET /api/currentUser': (req: Request, res: Response) => {
+  'POST /api/currentUser': async (req: Request, res: Response) => {
+    access = access || req.body.access || '';
     if (!getAccess()) {
       res.status(401).send({
         data: {
@@ -38,6 +44,7 @@ export default {
         errorCode: '401',
         errorMessage: '请先登录！',
         success: true,
+        access: getAccess(),
       });
       return;
     }
@@ -118,18 +125,18 @@ export default {
     },
   ],
   'POST /api/login/account': async (req: Request, res: Response) => {
-    const { password, username, type } = req.body;
+    const { password, userName, type } = req.body;
     await waitTime(1000);
-    if (password === '123456' && username === 'admin') {
+    if (password === '123456' && userName === 'admin') {
       res.send({
-        status: 'ok',
+        code: 200,
         type,
         currentAuthority: 'admin',
       });
       access = 'admin';
       return;
     }
-    if (password === '123456' && username === 'user') {
+    if (password === '123456' && userName === 'user') {
       res.send({
         status: 'ok',
         type,

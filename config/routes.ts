@@ -7,7 +7,6 @@ export default [
       { component: './404' },
     ],
   },
-  // { path: '/welcome', name: '欢迎', icon: 'smile', component: './Welcome' },
   {
     path: '/syllabus',
     name: '教学大纲',

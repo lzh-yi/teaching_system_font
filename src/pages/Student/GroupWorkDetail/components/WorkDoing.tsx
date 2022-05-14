@@ -1,5 +1,5 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Row,
   Col,
@@ -15,24 +15,20 @@ import {
 } from 'antd';
 import styles from './index.less';
 import { noop } from '@/utils/common';
-type workItemType = {
-  id: number;
-  question_stems: string;
-  answer_a: string;
-  answer_b: string;
-  answer_c: string;
-  answer_d: string;
-  question_answer: string;
-  score: string | number;
-  knowledgePoint: string;
-  type: number;
-};
+import { getGlobalUser } from '../../../../constant/index';
+import {
+  GroupWork,
+  Exercise as ExerciseUtils,
+  workStatistics as workStatisticsUtils,
+  exerciseComplete as exerciseCompleteUtils,
+} from '@/api/service';
+import dayjs from 'dayjs';
+import { history } from 'umi';
 
-const WorkDoing: React.FC = () => {
-  const [resultObj, setResultObj] = useState<{}>({});
+const WorkDoing: React.FC = (props: any) => {
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [btnLoading, setBtnLoading] = useState<boolean>(false);
-  const [workList, setWorkList] = useState<workItemType[]>([
+  const [workList, setWorkList] = useState<any[]>([
     {
       id: 0,
       question_stems: '下面哪个是Java中表示类的关键字',
@@ -107,6 +103,16 @@ const WorkDoing: React.FC = () => {
       type: 1,
     },
   ]);
+  const [exerciseTotal, setExerciseTotal] = useState<number>(0);
+  const [workGroupObj, setWorkGroupObj] = useState<any>({});
+  const [completeResultObj, setCompleteResultObj] = useState<any>({});
+
+  const { workGroup, workStatisticsId } = props;
+
+  useEffect(() => {
+    getGroupWorkInfo();
+    getExerciseList();
+  }, []);
 
   return (
     <PageContainer>
@@ -116,11 +122,11 @@ const WorkDoing: React.FC = () => {
             <Row>
               <Col span={10}>
                 <Space>
-                  <div className={styles['title']}>Java对象练习</div>
+                  <div className={styles['title']}>{workGroupObj.name}</div>
                   <Button
                     shape="round"
                     size="small"
-                    style={{ backgroundColor: '#C6CED6', color: 'white' }}
+                    style={{ backgroundColor: '#0253D9', color: 'white' }}
                   >
                     进行中
                   </Button>
@@ -131,13 +137,15 @@ const WorkDoing: React.FC = () => {
               <Col>
                 <Space align="center">
                   <Button type="primary" shape="round" size="small">
-                    简单
+                    {workGroupObj.difficultyLevel}
                   </Button>
-                  <span style={{ color: '#99B5D7' }}>建议时长：90分钟</span>
+                  <span style={{ color: '#99B5D7' }}>
+                    建议时长：{workGroupObj.suggestFinishTime}分钟
+                  </span>
                 </Space>
               </Col>
             </Row>
-            <div style={{ marginTop: '10px' }}>习题描述：该组习题主要是熟悉Java的类机制...</div>
+            <div style={{ marginTop: '10px' }}>习题描述：{workGroupObj.description}</div>
           </Col>
           <Col span={3}>
             <Button type="primary" onClick={() => setIsModalVisible(true)}>
@@ -151,26 +159,26 @@ const WorkDoing: React.FC = () => {
             <Col span={24}>
               {!workList.length && <Empty />}
               {/* 单选题 */}
-              {workList.filter((item) => item.type === 0).length > 0 && (
+              {workList.filter((item) => Number(item.type) === 0).length > 0 && (
                 <div>
                   <Row>
                     <Col span={24}>
                       <Space align="center">
                         <p className={styles['title']}>一、单选题</p>
                         <p className={styles['tips']}>
-                          (共{workList.filter((item) => item.type === 0).length}题；共
+                          (共{workList.filter((item) => Number(item.type) === 0).length}题；共
                           {calculateScore(workList, 0)}分)
                         </p>
                       </Space>
                     </Col>
                   </Row>
                   {workList
-                    .filter((item) => item.type === 0)
+                    .filter((item) => Number(item.type) === 0)
                     .map((item, index) => (
                       <div key={item.id} className={styles['project-item']}>
                         <Space>
                           <span>
-                            {index + 1}.{item.question_stems}
+                            {index + 1}.{item.questionStem}
                           </span>
                           <span>({item.score}分)</span>
                           {/* <span style={{ color: 'green', fontWeight: 600 }}>
@@ -178,7 +186,16 @@ const WorkDoing: React.FC = () => {
                           </span> */}
                         </Space>
                         <div style={{ marginTop: '5px' }}>
-                          <Radio.Group onChange={(e) => handleEditWork(item.id, e.target.value)}>
+                          <Radio.Group
+                            onChange={(e) =>
+                              handleEditWork(
+                                item.id,
+                                e.target.value,
+                                item.correctAnswer,
+                                item.score,
+                              )
+                            }
+                          >
                             <Space direction="vertical">
                               <Radio value="a">A</Radio>
                               <Radio value="b">B</Radio>
@@ -192,26 +209,26 @@ const WorkDoing: React.FC = () => {
                 </div>
               )}
               {/* 主观题 */}
-              {workList.filter((item) => item.type === 1).length > 0 && (
+              {workList.filter((item) => Number(item.type) === 1).length > 0 && (
                 <div>
                   <Row>
                     <Col span={24}>
                       <Space align="center">
                         <p className={styles['title']}>二、主观题</p>
                         <p className={styles['tips']}>
-                          (共{workList.filter((item) => item.type === 1).length}题；共
+                          (共{workList.filter((item) => Number(item.type) === 1).length}题；共
                           {calculateScore(workList, 1)}分)
                         </p>
                       </Space>
                     </Col>
                   </Row>
                   {workList
-                    .filter((item) => item.type === 1)
+                    .filter((item) => Number(item.type) === 1)
                     .map((item, index) => (
                       <div key={item.id} className={styles['project-item']}>
                         <Space>
                           <span>
-                            {index + 1}.{item.question_stems}
+                            {index + 1}.{item.questionStem}
                           </span>
                           <span>({item.score}分)</span>
                           {/* <span style={{ color: 'green', fontWeight: 600 }}>
@@ -256,30 +273,94 @@ const WorkDoing: React.FC = () => {
     </PageContainer>
   );
 
-  function calculateScore(workLists: workItemType[], projectType: number) {
+  function calculateScore(workLists: any[], projectType: number) {
     return workLists
-      .filter((item) => item.type === projectType)
+      .filter((item) => item.type == projectType)
       .reduce((preVal: number, item) => {
         return preVal + Number(item.score);
       }, 0);
   }
 
-  function handleEditWork(workID: number, workValue: String) {
-    setResultObj({
-      ...resultObj,
-      [workID]: workValue,
+  function handleEditWork(
+    workID: number,
+    workValue: String,
+    questionAnswer?: String,
+    workScore?: number,
+  ) {
+    if (!workValue) {
+      const copy = completeResultObj;
+      delete copy[workID];
+      return setCompleteResultObj(copy);
+    }
+    setCompleteResultObj({
+      ...completeResultObj,
+      [workID]: {
+        exerciseId: workID,
+        userId: getGlobalUser().id,
+        answer: workValue,
+        score: questionAnswer === workValue ? workScore : 0,
+      },
     });
   }
 
-  function handleSubmitWork() {
+  async function handleSubmitWork() {
+    if (exerciseTotal !== Object.keys(completeResultObj).length) {
+      return message.warn('请完成所有习题之后再提交');
+    }
     setIsModalVisible(true);
     setBtnLoading(true);
-    setTimeout(() => {
+    // 提交习题
+    for (const value of Object.values(completeResultObj)) {
+      console.log('xxxxxxxxxxxxxxxxxxx');
+      const res = await exerciseCompleteUtils.addExerciseComplete(value);
+      if (res && res.code !== 200) {
+        return message.warn('提交失败');
+      }
+    }
+
+    const obj = {
+      id: workStatisticsId,
+      workId: workGroup,
+      userId: getGlobalUser().id,
+      submitStatus: '1',
+      submitTime: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+      correctStatus: '0',
+      score: 0,
+      category: '0',
+    };
+    const res = await workStatisticsUtils.updateStatistics(obj);
+    if (res && res.code === 200) {
       setBtnLoading(false);
       setIsModalVisible(false);
       message.success('提交成功');
-      console.log(resultObj);
-    }, 1000);
+      history.push('/student/group_work');
+    }
+  }
+
+  // 获取题组下的所有习题
+  async function getExerciseList() {
+    const res = await ExerciseUtils.exerciseList({
+      page: 1,
+      pageSize: 10000,
+      category: '0',
+      workId: workGroup,
+    });
+    if (res && res.code === 200) {
+      setExerciseTotal(res.data.length);
+      setWorkList(res.data);
+    }
+  }
+
+  async function getGroupWorkInfo() {
+    const res = await GroupWork.groupWorkList({
+      page: 1,
+      pageSize: 1000,
+      id: workGroup,
+      name: '',
+    });
+    if (res && res.code === 200) {
+      setWorkGroupObj(res.data[0]);
+    }
   }
 };
 

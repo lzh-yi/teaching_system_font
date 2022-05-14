@@ -20,6 +20,9 @@ import Footer from '@/components/Footer';
 import { login } from '@/services/ant-design-pro/api';
 import { getFakeCaptcha } from '@/services/ant-design-pro/login';
 import styles from './index.less';
+import { UserUtils } from '@/api/service';
+import { getAccess, setAccess } from '../../../../mock/user';
+import { setGlobalUser } from '@/constant/index';
 
 const { Option } = Select;
 
@@ -37,12 +40,12 @@ const LoginMessage: React.FC<{
 );
 
 const Login: React.FC = () => {
-  const [userLoginState, setUserLoginState] = useState<API.LoginResult>({});
+  const [userLoginState, setUserLoginState] = useState<any>({});
   const [type, setType] = useState<string>('account');
   const { initialState, setInitialState } = useModel('@@initialState');
 
-  const fetchUserInfo = async () => {
-    const userInfo = await initialState?.fetchUserInfo?.();
+  const fetchUserInfo = async (access: string) => {
+    const userInfo = await initialState?.fetchUserInfo?.(access);
 
     if (userInfo) {
       await setInitialState((s) => ({ ...s, currentUser: userInfo }));
@@ -51,13 +54,27 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (values: API.LoginParams) => {
     try {
-      // 登录
-      const msg = await login({ ...values, type });
+      let msg = null;
+      // 注册
+      if (values.type) {
+        msg = (await UserUtils.registerUser(values)) as any;
+      } else {
+        // 登陆
+        msg = (await UserUtils.loginUser(values)) as any;
+      }
 
-      if (msg.status === 'ok') {
+      // const msg = (await login({ ...values, type })) as any;
+
+      if (msg.code === 200) {
         const defaultLoginSuccessMessage = '登录成功！';
         message.success(defaultLoginSuccessMessage);
-        await fetchUserInfo();
+        let access = msg.data[0].type === 'teacher' ? 'admin' : 'user';
+        setGlobalUser({
+          ...msg.data[0],
+          access,
+          avatar: 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
+        });
+        await fetchUserInfo(access);
         /** 此方法会跳转到 redirect 参数所在的位置 */
 
         if (!history) return;
@@ -66,10 +83,9 @@ const Login: React.FC = () => {
           redirect: string;
         };
         history.push(redirect || '/');
+
         return;
       }
-
-      console.log(msg); // 如果失败去设置用户错误信息
 
       setUserLoginState(msg);
     } catch (error) {
@@ -78,7 +94,7 @@ const Login: React.FC = () => {
     }
   };
 
-  const { status, type: loginType } = userLoginState;
+  const { code = 200 } = userLoginState;
   return (
     <div className={styles.container}>
       <div className={styles.content}>
@@ -96,6 +112,11 @@ const Login: React.FC = () => {
           //   <WeiboCircleOutlined key="WeiboCircleOutlined" className={styles.icon} />,
           // ]}
           onFinish={async (values) => {
+            console.log(values);
+            if (values.type && values.password !== values.passwordAgin) {
+              return message.error('两次密码不一致');
+            }
+
             await handleSubmit(values as API.LoginParams);
           }}
         >
@@ -104,13 +125,11 @@ const Login: React.FC = () => {
             <Tabs.TabPane key="register" tab={'新用户注册'} />
           </Tabs>
 
-          {status === 'error' && loginType === 'account' && (
-            <LoginMessage content={'错误的用户名和密码'} />
-          )}
           {type === 'account' && (
             <>
+              {code !== 200 && <LoginMessage content={'错误的用户名和密码'} />}
               <ProFormText
-                name="username"
+                name="userName"
                 fieldProps={{
                   size: 'large',
                   prefix: <UserOutlined className={styles.prefixIcon} />,
@@ -142,11 +161,11 @@ const Login: React.FC = () => {
             </>
           )}
 
-          {status === 'error' && loginType === 'mobile' && <LoginMessage content="验证码错误" />}
           {type === 'register' && (
             <>
+              {code !== 200 && <LoginMessage content={'用户名已存在'} />}
               <ProFormText
-                name="username"
+                name="userName"
                 fieldProps={{
                   size: 'large',
                   prefix: <UserOutlined className={styles.prefixIcon} />,
@@ -175,7 +194,7 @@ const Login: React.FC = () => {
                 ]}
               />
               <ProFormText.Password
-                name="password_agin"
+                name="passwordAgin"
                 fieldProps={{
                   size: 'large',
                   prefix: <LockOutlined className={styles.prefixIcon} />,
@@ -197,16 +216,16 @@ const Login: React.FC = () => {
                 ]}
                 options={[
                   {
-                    value: 0,
+                    value: 'teacher',
                     label: '教师',
                   },
                   {
-                    value: 1,
+                    value: 'student',
                     label: '学生',
                   },
                 ]}
                 width="md"
-                name="identity"
+                name="type"
                 placeholder="请选择注册身份"
               />
             </>

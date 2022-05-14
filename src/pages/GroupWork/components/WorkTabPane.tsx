@@ -427,10 +427,17 @@ const WorkTabPane: React.FC = (props: any) => {
       ...value,
     });
     if (res && res.code === 200) {
-      setUpLoading(false);
-      message.success('截止成功');
-      setDeadlineVisible(false);
-      getGroupList();
+      // 为每个学生创建一条数据
+      const result = await GroupWork.updateCompleteList({
+        workId: initialValues.id,
+        submitStatus: '1',
+      });
+      if (result && result.code === 200) {
+        setUpLoading(false);
+        message.success('截止成功');
+        setDeadlineVisible(false);
+        getGroupList();
+      }
     }
   }
 
@@ -461,10 +468,17 @@ const WorkTabPane: React.FC = (props: any) => {
       ...value,
     });
     if (res && res.code === 200) {
-      setUpLoading(false);
-      message.success('发布成功');
-      setPublishVisible(false);
-      getGroupList();
+      // 为每个学生创建一条数据
+      const result = await GroupWork.insertCompleteList({
+        workId: initialValues.id,
+        submitStatus: '0',
+      });
+      if (result && result.code === 200) {
+        setUpLoading(false);
+        message.success('发布成功');
+        setPublishVisible(false);
+        getGroupList();
+      }
     }
   }
 

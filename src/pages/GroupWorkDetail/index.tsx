@@ -29,7 +29,7 @@ const GroupWorkDetail: React.FC = () => {
               </TabPane>
               {Number(workGroupStatus) !== 0 && (
                 <TabPane tab="完成情况" key="2">
-                  <WorkCompleteList />
+                  <WorkCompleteList workId={workId} />
                 </TabPane>
               )}
             </Tabs>

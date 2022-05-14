@@ -1,13 +1,17 @@
 import { Button, Space, Table } from 'antd';
-import React, { useState } from 'react';
-import { workCompleteCol, tableDataVal, workCompleteColType } from './constant';
+import React, { useEffect, useState } from 'react';
+import { workCompleteCol } from './constant';
 import { history } from 'umi';
 import tableStyles from '@/assets/styles/table.less';
+import { workStatistics as workStatisticsUtils } from '@/api/service';
 
-const WorkCompleteList: React.FC = () => {
+const WorkCompleteList: React.FC = (props: any) => {
   const [searchCondition, setSearchCondition] = useState({ page: 1, pageSize: 20 });
   const [totalData, setTotalData] = useState<number>(0);
   const [tableLoading, setTableLoading] = useState<boolean>(false);
+  const [workstatisticsList, setWorkStatisticsList] = useState<any[]>([]);
+
+  const { workId } = props;
 
   let colConfig = [].concat(workCompleteCol, [
     {
@@ -15,7 +19,7 @@ const WorkCompleteList: React.FC = () => {
       align: 'center',
       width: 150,
       dataIndex: 'is_correct',
-      render(text: boolean, record: workCompleteColType) {
+      render(text: boolean, record: any) {
         return (
           <Space>
             <Button type="primary" onClick={handleCorrectWork}>
@@ -51,6 +55,10 @@ const WorkCompleteList: React.FC = () => {
     },
   };
 
+  useEffect(() => {
+    getWorkStatisticsList();
+  }, []);
+
   return (
     <div>
       <div className={tableStyles['table-wrap']}>
@@ -58,7 +66,7 @@ const WorkCompleteList: React.FC = () => {
           scroll={{ x: 1000 }}
           // className={tableStyles['log-tab']}
           columns={colConfig as any}
-          dataSource={tableDataVal}
+          dataSource={workstatisticsList}
           pagination={pagination as any}
           loading={tableLoading}
         />
@@ -72,6 +80,21 @@ const WorkCompleteList: React.FC = () => {
   }
   function handleReviewWork() {
     history.push('/group_work/review');
+  }
+
+  async function getWorkStatisticsList() {
+    const res = await workStatisticsUtils.completeList({
+      page: 1,
+      pageSize: 10000,
+      category: '0',
+      userId: '-1',
+      workId,
+    });
+
+    if (res && res.code === 200) {
+      console.log(res.data);
+      setWorkStatisticsList(res.data);
+    }
   }
 };
 

@@ -52,6 +52,8 @@ const GroupWork = {
   updateGroupWork: '/api/group_work/update',
   // 下拉列表数据
   knowledgePointSelectDataByGroup: '/api/group_work/select_data',
+  insertCompleteList: '/api/group_work/insert_complete_list',
+  updateCompleteList: '/api/group_work/update_complete_list',
 };
 
 /** 习题 */
@@ -62,6 +64,23 @@ const exercise = {
   exerciseList: '/api/exercise/list',
 };
 
+const user = {
+  registerUser: '/api/user/register',
+  loginUser: '/api/user/login',
+  userList: '/api/user/list',
+};
+
+/** 学生-题组/考试 完成情况 */
+const statistics = {
+  completeList: '/api/work_statistics/list',
+  updateStatistics: '/api/work_statistics/update',
+};
+
+/** 学生-题目 完成情况 */
+const exerciseComplete = {
+  addExerciseComplete: '/api/exercise_complete/add',
+};
+
 export default {
   ...teachingOutline,
   ...teachingSchedule,
@@ -69,4 +88,7 @@ export default {
   ...KnowledgePoint,
   ...GroupWork,
   ...exercise,
+  ...user,
+  ...statistics,
+  ...exerciseComplete,
 };
