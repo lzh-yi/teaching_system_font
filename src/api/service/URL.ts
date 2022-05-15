@@ -79,6 +79,8 @@ const statistics = {
 /** 学生-题目 完成情况 */
 const exerciseComplete = {
   addExerciseComplete: '/api/exercise_complete/add',
+  exerciseCompleteList: '/api/exercise_complete/list',
+  updateExerciseComplete: '/api/exercise_complete/update',
 };
 
 export default {

@@ -8,3 +8,19 @@ export const addExerciseComplete = (data: any) => {
     data,
   });
 };
+
+export const exerciseCompleteList = (data: any) => {
+  return request({
+    method: 'post',
+    url: URL.exerciseCompleteList,
+    data,
+  });
+};
+
+export const updateExerciseComplete = (data: any) => {
+  return request({
+    method: 'post',
+    url: URL.updateExerciseComplete,
+    data,
+  });
+};

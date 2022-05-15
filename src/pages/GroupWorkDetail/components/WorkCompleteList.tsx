@@ -18,16 +18,18 @@ const WorkCompleteList: React.FC = (props: any) => {
       title: '操作',
       align: 'center',
       width: 150,
-      dataIndex: 'is_correct',
-      render(text: boolean, record: any) {
+      dataIndex: 'correctStatus',
+      render(value: string, record: any) {
         return (
           <Space>
-            <Button type="primary" onClick={handleCorrectWork}>
-              批改
-            </Button>
-            {record.work_status === 1 && text && (
+            {record.submitStatus === '1' && (
+              <Button type="primary" onClick={() => handleCorrectWork(record)}>
+                批改
+              </Button>
+            )}
+            {Number(value) === 1 && (
               <Button
-                onClick={handleReviewWork}
+                onClick={() => handleReviewWork(record)}
                 type="primary"
                 style={{ backgroundColor: '#66AF77', border: 'none' }}
               >
@@ -63,7 +65,7 @@ const WorkCompleteList: React.FC = (props: any) => {
     <div>
       <div className={tableStyles['table-wrap']}>
         <Table
-          scroll={{ x: 1000 }}
+          scroll={{ x: 900 }}
           // className={tableStyles['log-tab']}
           columns={colConfig as any}
           dataSource={workstatisticsList}
@@ -75,11 +77,15 @@ const WorkCompleteList: React.FC = (props: any) => {
   );
 
   // 批改作业
-  function handleCorrectWork() {
-    history.push('/group_work/correct');
+  function handleCorrectWork(record: any) {
+    history.push(
+      `/group_work/correct?work_id=${record.workId}&statics_id=${record.id}&user_id=${record.userId}`,
+    );
   }
-  function handleReviewWork() {
-    history.push('/group_work/review');
+  function handleReviewWork(record: any) {
+    history.push(
+      `/group_work/review?work_id=${record.workId}&statics_id=${record.id}&user_id=${record.userId}`,
+    );
   }
 
   async function getWorkStatisticsList() {

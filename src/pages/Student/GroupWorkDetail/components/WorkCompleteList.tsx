@@ -1,127 +1,50 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Col, Divider, InputNumber, Radio, Row, Space } from 'antd';
 import styles from './index.less';
 import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { getGlobalUser } from '@/constant';
+import {
+  GroupWork as GroupWorkUtils,
+  Exercise as ExerciseUtils,
+  workStatistics as workStatisticsUtils,
+  exerciseComplete as exerciseCompleteUtils,
+  UserUtils,
+} from '@/api/service';
+import dayjs from 'dayjs';
 
-/** 学生-题目 对应表 */
-type workItemType = {
-  id: number;
-  question_stems: string;
-  answer_a: string;
-  answer_b: string;
-  answer_c: string;
-  answer_d: string;
-  question_answer: string;
-  score: string | number;
-  knowledgePoint: string;
-  type: number;
-  user_name: string;
-  get_score: number;
-  select_answer: string;
-};
+const WorkCompleteList: React.FC = (props: any) => {
+  const { workGroupId, staticsId } = props;
+  const [workGroupObj, setWorkGroupObj] = useState<any>({});
+  const [workStaticsObj, setWorkStaticsObj] = useState<any>({});
+  const [exerciseCompleteList, setExerciseCompleteList] = useState<any>([]);
+  const [userList, setUserList] = useState<any[]>([]);
+  const [workList, setWorkList] = useState<any[]>([]);
 
-const WorkCompleteList: React.FC = () => {
-  const [workList, setWorkList] = useState<workItemType[]>([
-    {
-      id: 0,
-      question_stems: '下面哪个是Java中表示类的关键字',
-      answer_a: 'class',
-      answer_b: 'static',
-      answer_c: 'public',
-      answer_d: 'int',
-      question_answer: 'a',
-      score: 5,
-      knowledgePoint: '知识点1',
-      type: 0,
-      select_answer: 'a',
-      user_name: '张三',
-      get_score: 5,
-    },
-    {
-      id: 1,
-      question_stems: '下面哪个是Java中表示类的修饰符',
-      answer_a: 'int',
-      answer_b: 'public',
-      answer_c: 'double',
-      answer_d: 'for',
-      question_answer: 'b',
-      score: 5,
-      knowledgePoint: '知识点2',
-      type: 0,
-      select_answer: 'c',
-      user_name: '李四',
-      get_score: 0,
-    },
-    {
-      id: 2,
-      question_stems: 'Java中创建对象的关键字是',
-      answer_a: 'for',
-      answer_b: 'create',
-      answer_c: 'double',
-      answer_d: 'new',
-      question_answer: 'd',
-      score: 5,
-      knowledgePoint: '知识点3',
-      type: 0,
-      select_answer: 'a',
-      user_name: '张三',
-      get_score: 0,
-    },
-    {
-      id: 3,
-      question_stems: '简述Java的类机制',
-      answer_a: '',
-      answer_b: '',
-      answer_c: '',
-      answer_d: '',
-      question_answer: 'Java的类机制...',
-      score: 20,
-      knowledgePoint: '知识点1',
-      type: 1,
-      select_answer: 'Java的类机制是...',
-      user_name: '张三',
-      get_score: 15,
-    },
-    {
-      id: 4,
-      question_stems: 'Java中创建对象的关键字是',
-      answer_a: 'for',
-      answer_b: 'create',
-      answer_c: 'double',
-      answer_d: 'new',
-      question_answer: 'd',
-      score: 5,
-      knowledgePoint: '知识点1',
-      type: 0,
-      select_answer: 'd',
-      user_name: '张三',
-      get_score: 5,
-    },
-    {
-      id: 5,
-      question_stems: '简述Java类的几种修饰符',
-      answer_a: '',
-      answer_b: '',
-      answer_c: '',
-      answer_d: '',
-      question_answer:
-        '在 Java 语言中提供了多个作用域修饰符，其中常用的有 public、private、protected、final、abstract、static、transient 和 volatile，这些修饰符有类修饰符、变量修饰符和方法修饰符。',
-      score: 20,
-      knowledgePoint: '知识点1',
-      type: 1,
-      select_answer: 'Java的修饰符...',
-      user_name: '张三',
-      get_score: 10,
-    },
-  ]);
+  const userId = getGlobalUser().id;
+
+  useEffect(() => {
+    getGroupWorkInfo();
+    getExerciseList();
+    getworkStatics();
+    getExerciseCompleteList();
+    (async () => {
+      const res = (await UserUtils.userList({
+        type: 'student',
+      })) as any;
+      if (res && res.code === 200) {
+        setUserList(res.data);
+      }
+    })();
+  }, []);
+
   return (
     <PageContainer>
       <div className={styles['correct-work-wrap']}>
         <Row>
           <Col span={10}>
             <Space>
-              <div className={styles['title']}>Java对象练习</div>
+              <div className={styles['title']}>{workGroupObj.name}</div>
             </Space>
           </Col>
         </Row>
@@ -129,105 +52,128 @@ const WorkCompleteList: React.FC = () => {
           <Col>
             <Space align="center">
               <Button type="primary" shape="round" size="small">
-                简单
+                {workGroupObj.difficultyLevel}
               </Button>
-              <span style={{ color: '#99B5D7' }}>建议时长：90分钟</span>
+              <span style={{ color: '#99B5D7' }}>
+                建议时长：{workGroupObj.suggestFinishTime}分钟
+              </span>
             </Space>
           </Col>
         </Row>
-        <div style={{ marginTop: '10px' }}>习题描述：该组习题主要是熟悉Java的类机制...</div>
+        <div style={{ marginTop: '10px' }}>习题描述：{workGroupObj.description}</div>
         <Row style={{ marginTop: '10px' }}>
           <Col span={24}>
             <Space>
-              <span className={styles['submit-info']}>提交时间：2022-04-23 12:00:08</span>
+              <span className={styles['submit-info']}>
+                提交时间：{dayjs(workStaticsObj.submitTime).format('YYYY-MM-DD HH:mm:ss')}
+              </span>
             </Space>
           </Col>
         </Row>
-        <Row style={{ marginTop: '10px', fontSize: '18px' }}>
-          <Col span={24}>
-            <Space style={{ fontWeight: 'bold' }}>
-              <span>最终得分</span>
-              <span>{calculateScore(workList, 0) + calculateScore(workList, 1)}</span>
-            </Space>
-          </Col>
-        </Row>
+        {workStaticsObj.correctStatus === '1' && (
+          <Row style={{ marginTop: '10px', fontSize: '18px' }}>
+            <Col span={24}>
+              <Space style={{ fontWeight: 'bold' }}>
+                <span>最终得分</span>
+                <span>{workStaticsObj.score}</span>
+              </Space>
+            </Col>
+          </Row>
+        )}
         <Divider />
         <main className={styles['main-container']}>
           <Row>
             <Col span={24}>
               {/* 单选题 */}
-              {workList.filter((item) => item.type === 0).length > 0 && (
+              {workList.filter((item) => item.type == 0).length > 0 && (
                 <div>
                   <Row>
                     <Col span={24}>
                       <Space align="center">
                         <p className={styles['title']}>一、单选题</p>
                         <p className={styles['tips']}>
-                          (共{workList.filter((item) => item.type === 0).length}题；共
+                          (共{workList.filter((item) => item.type == 0).length}题；共
                           {calculateScore(workList, 0)}分)
                         </p>
                       </Space>
                     </Col>
                   </Row>
                   {workList
-                    .filter((item) => item.type === 0)
+                    .filter((item) => item.type == 0)
                     .map((item, index) => (
                       <div key={item.id} className={styles['project-item']}>
                         <Row>
                           <Col span={20}>
                             <Space>
                               <span>
-                                {index + 1}.{item.question_stems}
+                                {index + 1}.{item.questionStem}
                               </span>
                               <span>({item.score}分)</span>
-                              <span style={{ color: 'green', fontWeight: 600 }}>
+                              {/* <span style={{ color: 'green', fontWeight: 600 }}>
                                 (知识点：{item.knowledgePoint})
-                              </span>
+                              </span> */}
                             </Space>
                           </Col>
-                          <Col span={2} push={2}>
-                            {item.select_answer === item.question_answer && (
-                              <CheckCircleOutlined style={{ color: 'green', fontSize: '20px' }} />
-                            )}
-                            {item.select_answer !== item.question_answer && (
-                              <CloseCircleOutlined style={{ color: 'red', fontSize: '20px' }} />
-                            )}
-                          </Col>
+                          {workStaticsObj.correctStatus === '1' && (
+                            <Col span={2} push={2}>
+                              {getStudentDoneExercise(item.id).answer === item.correctAnswer && (
+                                <CheckCircleOutlined style={{ color: 'green', fontSize: '20px' }} />
+                              )}
+                              {getStudentDoneExercise(item.id).answer !== item.correctAnswer && (
+                                <CloseCircleOutlined style={{ color: 'red', fontSize: '20px' }} />
+                              )}
+                            </Col>
+                          )}
                         </Row>
                         <div style={{ marginTop: '5px' }}>
                           <Space direction="vertical">
                             <Space>
-                              <Radio checked={item.select_answer === 'a'} disabled>
+                              <Radio
+                                checked={getStudentDoneExercise(item.id).answer === 'a'}
+                                disabled
+                              >
                                 A
                               </Radio>
-                              <span>{item.answer_a}</span>
+                              <span>{item.optionA}</span>
                             </Space>
                             <Space>
-                              <Radio checked={item.select_answer === 'b'} disabled>
+                              <Radio
+                                checked={getStudentDoneExercise(item.id).answer === 'b'}
+                                disabled
+                              >
                                 B
                               </Radio>
-                              <span>{item.answer_b}</span>
+                              <span>{item.optionB}</span>
                             </Space>
                             <Space>
-                              <Radio checked={item.select_answer === 'c'} disabled>
+                              <Radio
+                                checked={getStudentDoneExercise(item.id).answer === 'c'}
+                                disabled
+                              >
                                 C
                               </Radio>
-                              <span>{item.answer_c}</span>
+                              <span>{item.optionC}</span>
                             </Space>
                             <Space>
-                              <Radio checked={item.select_answer === 'd'} disabled>
+                              <Radio
+                                checked={getStudentDoneExercise(item.id).answer === 'd'}
+                                disabled
+                              >
                                 D
                               </Radio>
-                              <span>{item.answer_d}</span>
+                              <span>{item.optionD}</span>
                             </Space>
-                            {item.question_answer !== item.select_answer && (
-                              <Space>
-                                <span style={{ color: 'red', fontWeight: 'bold' }}>正确答案：</span>
-                                <span style={{ color: 'red', fontWeight: 'bold' }}>
-                                  {item.question_answer.toUpperCase()}
-                                </span>
-                              </Space>
-                            )}
+                            {workStaticsObj.correctStatus === '1' &&
+                              getStudentDoneExercise(item.id).answer !== item.correctAnswer && (
+                                <Space>
+                                  <span style={{ color: 'red', fontWeight: 'bold' }}>
+                                    正确答案：
+                                  </span>
+                                  <span style={{ color: 'red', fontWeight: 'bold' }}>
+                                    {item.correctAnswer.toUpperCase()}
+                                  </span>
+                                </Space>
+                              )}
                           </Space>
                         </div>
                       </div>
@@ -235,50 +181,59 @@ const WorkCompleteList: React.FC = () => {
                 </div>
               )}
               {/* 主观题 */}
-              {workList.filter((item) => item.type === 1).length > 0 && (
+              {workList.filter((item) => item.type == 1).length > 0 && (
                 <div>
                   <Row>
                     <Col span={24}>
                       <Space align="center">
                         <p className={styles['title']}>二、主观题</p>
                         <p className={styles['tips']}>
-                          (共{workList.filter((item) => item.type === 1).length}题；共
+                          (共{workList.filter((item) => item.type == 1).length}题；共
                           {calculateScore(workList, 1)}分)
                         </p>
                       </Space>
                     </Col>
                   </Row>
                   {workList
-                    .filter((item) => item.type === 1)
+                    .filter((item) => item.type == 1)
                     .map((item, index) => (
                       <div key={item.id} className={styles['project-item']}>
                         <Row>
                           <Col span={18}>
                             <Space>
                               <span>
-                                {index + 1}.{item.question_stems}
+                                {index + 1}.{item.questionStem}
                               </span>
                               <span>({item.score}分)</span>
-                              <span style={{ color: 'green', fontWeight: 600 }}>
+                              {/* <span style={{ color: 'green', fontWeight: 600 }}>
                                 (知识点：{item.knowledgePoint})
-                              </span>
+                              </span> */}
                             </Space>
                           </Col>
-                          <Col span={6}>
-                            <Space>
-                              <span style={{ color: 'green', fontWeight: 'bold' }}>得分：</span>
-                              <InputNumber readOnly value={item.get_score} />
-                            </Space>
-                          </Col>
+                          {workStaticsObj.correctStatus === '1' && (
+                            <Col span={6}>
+                              <Space>
+                                <span style={{ color: 'green', fontWeight: 'bold' }}>得分：</span>
+                                <InputNumber
+                                  readOnly
+                                  value={getStudentDoneExercise(item.id).score}
+                                />
+                              </Space>
+                            </Col>
+                          )}
                         </Row>
                         <div style={{ marginTop: '5px' }}>
                           <p style={{ fontWeight: 600, marginBottom: '5px' }}>提交答案：</p>
-                          <div className={styles['select-answer-wrap']}>{item.select_answer}</div>
+                          <div className={styles['select-answer-wrap']}>
+                            {getStudentDoneExercise(item.id).answer}
+                          </div>
                         </div>
-                        <div style={{ marginTop: '10px' }}>
-                          <p style={{ fontWeight: 600, marginBottom: '5px' }}>参考答案：</p>
-                          <p>{item.question_answer}</p>
-                        </div>
+                        {workStaticsObj.correctStatus === '1' && (
+                          <div style={{ marginTop: '10px' }}>
+                            <p style={{ fontWeight: 600, marginBottom: '5px' }}>参考答案：</p>
+                            <p>{item.correctAnswer}</p>
+                          </div>
+                        )}
                       </div>
                     ))}
                 </div>
@@ -289,12 +244,73 @@ const WorkCompleteList: React.FC = () => {
       </div>
     </PageContainer>
   );
-  function calculateScore(workLists: workItemType[], projectType: number) {
+  function calculateScore(workLists: any, projectType: number) {
     return workLists
-      .filter((item) => item.type === projectType)
+      .filter((item) => item.type == projectType)
       .reduce((preVal: number, item) => {
-        return preVal + Number(item.get_score);
+        return preVal + Number(item.score);
       }, 0);
+  }
+
+  async function getGroupWorkInfo() {
+    const res = await GroupWorkUtils.groupWorkList({
+      page: 1,
+      pageSize: 1000,
+      id: workGroupId,
+      name: '',
+    });
+    if (res && res.code === 200) {
+      setWorkGroupObj(res.data[0]);
+    }
+  }
+
+  async function getExerciseList() {
+    const res = await ExerciseUtils.exerciseList({
+      page: 1,
+      pageSize: 10000,
+      category: '0',
+      workId: workGroupId,
+    });
+    if (res && res.code === 200) {
+      setWorkList(res.data);
+    }
+  }
+
+  async function getworkStatics() {
+    const res = await workStatisticsUtils.completeList({
+      page: 1,
+      pageSize: 10000,
+      category: '0',
+      workId: workGroupId,
+      id: Number(staticsId),
+    });
+    if (res && res.code === 200) {
+      setWorkStaticsObj(res.data[0]);
+    }
+  }
+
+  async function getExerciseCompleteList() {
+    const res = await exerciseCompleteUtils.exerciseCompleteList({
+      userId,
+    });
+    if (res && res.code === 200) {
+      setExerciseCompleteList(res.data);
+    }
+  }
+
+  function getUserName(userId: number) {
+    for (const value of userList) {
+      if (userId === value.id) return value.userName;
+    }
+  }
+
+  function getStudentDoneExercise(exerciseId: number) {
+    for (const value of exerciseCompleteList) {
+      if (exerciseId === value.exerciseId) {
+        return value;
+      }
+    }
+    return {};
   }
 };
 

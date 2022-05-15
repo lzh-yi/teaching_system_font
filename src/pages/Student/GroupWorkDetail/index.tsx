@@ -15,7 +15,9 @@ const GroupWorkDetail: React.FC = () => {
       {workGroupStatus === '0' && (
         <WorkDoing workGroup={workGroup} workStatisticsId={workStatisticsId} />
       )}
-      {workGroupStatus === '1' && <WorkCompleteList workGroup={workGroup} />}
+      {workGroupStatus === '1' && (
+        <WorkCompleteList workGroupId={workGroup} staticsId={workStatisticsId} />
+      )}
     </div>
   );
 };
