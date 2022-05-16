@@ -1,33 +1,39 @@
 import { Button, Space, Table } from 'antd';
-import React, { useState } from 'react';
-import { workCompleteCol, tableDataVal, workCompleteColType } from './constant';
+import React, { useEffect, useState } from 'react';
+import { workCompleteCol } from './constant';
 import { history } from 'umi';
 import tableStyles from '@/assets/styles/table.less';
+import { workStatistics as workStatisticsUtils } from '@/api/service';
 
-const ExaminationCompleteList: React.FC = () => {
+const WorkCompleteList: React.FC = (props: any) => {
   const [searchCondition, setSearchCondition] = useState({ page: 1, pageSize: 20 });
   const [totalData, setTotalData] = useState<number>(0);
   const [tableLoading, setTableLoading] = useState<boolean>(false);
+  const [workstatisticsList, setWorkStatisticsList] = useState<any[]>([]);
+
+  const { workId } = props;
 
   let colConfig = [].concat(workCompleteCol, [
     {
       title: '操作',
       align: 'center',
       width: 150,
-      dataIndex: 'is_correct',
-      render(text: boolean, record: workCompleteColType) {
+      dataIndex: 'correctStatus',
+      render(value: string, record: any) {
         return (
           <Space>
-            <Button type="primary" onClick={handleCorrectWork}>
-              批改
-            </Button>
-            {record.work_status === 1 && text && (
+            {record.submitStatus === '1' && (
+              <Button type="primary" onClick={() => handleCorrectWork(record)}>
+                批改
+              </Button>
+            )}
+            {Number(value) === 1 && (
               <Button
-                onClick={handleReviewWork}
+                onClick={() => handleReviewWork(record)}
                 type="primary"
                 style={{ backgroundColor: '#66AF77', border: 'none' }}
               >
-                再次批改
+                查看
               </Button>
             )}
           </Space>
@@ -50,14 +56,19 @@ const ExaminationCompleteList: React.FC = () => {
       // })
     },
   };
+
+  useEffect(() => {
+    getWorkStatisticsList();
+  }, []);
+
   return (
     <div>
       <div className={tableStyles['table-wrap']}>
         <Table
-          scroll={{ x: 1000 }}
+          scroll={{ x: 900 }}
           // className={tableStyles['log-tab']}
           columns={colConfig as any}
-          dataSource={tableDataVal}
+          dataSource={workstatisticsList}
           pagination={pagination as any}
           loading={tableLoading}
         />
@@ -65,13 +76,32 @@ const ExaminationCompleteList: React.FC = () => {
     </div>
   );
 
-  // 批改考试
-  function handleCorrectWork() {
-    history.push('/examination/correct');
+  // 批改作业
+  function handleCorrectWork(record: any) {
+    history.push(
+      `/examination/correct?work_id=${record.workId}&statics_id=${record.id}&user_id=${record.userId}`,
+    );
   }
-  function handleReviewWork() {
-    history.push('/examination/review');
+  function handleReviewWork(record: any) {
+    history.push(
+      `/examination/review?work_id=${record.workId}&statics_id=${record.id}&user_id=${record.userId}`,
+    );
+  }
+
+  async function getWorkStatisticsList() {
+    const res = await workStatisticsUtils.completeList({
+      page: 1,
+      pageSize: 10000,
+      category: '1',
+      userId: '-1',
+      workId,
+    });
+
+    if (res && res.code === 200) {
+      console.log(res.data);
+      setWorkStatisticsList(res.data);
+    }
   }
 };
 
-export default ExaminationCompleteList;
+export default WorkCompleteList;

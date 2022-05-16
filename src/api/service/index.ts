@@ -7,6 +7,7 @@ import * as Exercise from './exercise';
 import * as UserUtils from './user';
 import * as workStatistics from './statistics';
 import * as exerciseComplete from './exerciseComplete';
+import * as examination from './examination';
 
 export {
   teachingOutline,
@@ -18,4 +19,5 @@ export {
   UserUtils,
   workStatistics,
   exerciseComplete,
+  examination,
 };

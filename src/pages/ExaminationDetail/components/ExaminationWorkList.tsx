@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Row,
   Col,
@@ -22,103 +22,70 @@ import {
 } from '@ant-design/icons';
 import CreateSelectWork from '@/pages/ExaminationDetail/components/CreateSelectWork';
 import CreateSubjectiveWork from '@/pages/ExaminationDetail/components/CreateSubjectiveWork';
+import {
+  examination as GroupWork,
+  Exercise as ExerciseUtils,
+  knowledgePoint as knowledgePointUtils,
+} from '@/api/service';
+import dayjs from 'dayjs';
+import { history } from 'umi';
 
-type workItemType = {
-  id: number;
-  question_stems: string;
-  answer_a: string;
-  answer_b: string;
-  answer_c: string;
-  answer_d: string;
-  question_answer: string;
-  score: string | number;
-  knowledgePoint: string;
-  type: number;
-};
-
-const ExaminationWorkList: React.FC = (props: any) => {
+const GroupWorkDetail: React.FC = (props: any) => {
   const [selectWorkVisible, setSelectWorkVisible] = useState<boolean>(false);
   const [subjectiveWorkVisible, setSubjectiveWorkVisible] = useState<boolean>(false);
   const [publishVisible, setPublishVisible] = useState<boolean>(false);
   const [upLoading, setUpLoading] = useState<boolean>(false);
-  const [workList, setWorkList] = useState<workItemType[]>([
-    {
-      id: 0,
-      question_stems: '下面哪个是Java中表示类的关键字',
-      answer_a: 'class',
-      answer_b: 'static',
-      answer_c: 'public',
-      answer_d: 'int',
-      question_answer: 'a',
-      score: 5,
-      knowledgePoint: '知识点1',
-      type: 0,
-    },
-    {
-      id: 1,
-      question_stems: '下面哪个是Java中表示类的修饰符',
-      answer_a: 'int',
-      answer_b: 'public',
-      answer_c: 'double',
-      answer_d: 'for',
-      question_answer: 'b',
-      score: 5,
-      knowledgePoint: '知识点2',
-      type: 0,
-    },
-    {
-      id: 2,
-      question_stems: 'Java中创建对象的关键字是',
-      answer_a: 'for',
-      answer_b: 'create',
-      answer_c: 'double',
-      answer_d: 'new',
-      question_answer: 'd',
-      score: 5,
-      knowledgePoint: '知识点3',
-      type: 0,
-    },
-    {
-      id: 3,
-      question_stems: '简述Java的类机制',
-      answer_a: '',
-      answer_b: '',
-      answer_c: '',
-      answer_d: '',
-      question_answer: 'Java的类机制...',
-      score: 20,
-      knowledgePoint: '知识点1',
-      type: 1,
-    },
-    {
-      id: 4,
-      question_stems: 'Java中创建对象的关键字是',
-      answer_a: 'for',
-      answer_b: 'create',
-      answer_c: 'double',
-      answer_d: 'new',
-      question_answer: 'd',
-      score: 5,
-      knowledgePoint: '知识点1',
-      type: 0,
-    },
-    {
-      id: 5,
-      question_stems: '简述Java类的几种修饰符',
-      answer_a: '',
-      answer_b: '',
-      answer_c: '',
-      answer_d: '',
-      question_answer:
-        '在 Java 语言中提供了多个作用域修饰符，其中常用的有 public、private、protected、final、abstract、static、transient 和 volatile，这些修饰符有类修饰符、变量修饰符和方法修饰符。',
-      score: 20,
-      knowledgePoint: '知识点1',
-      type: 1,
-    },
-  ]);
+  const [workList, setWorkList] = useState<any[]>([]);
+  const [initialValues, setInitialValues] = useState<{}>({});
+  const [workGroupObj, setWorkGroupObj] = useState<any>({});
+  const [treeNodeData, setTreeNodeData] = useState<any[]>([]);
+  const [knowledgePointList, setKnowledgePointList] = useState<any[]>([]);
 
   // 标记当前习题组是否是未发布状态
-  const { workGroupStatus } = props;
+  const { workGroupStatus, workId, outlineId } = props;
+  const bgColor = {
+    '0': {
+      color: '#C6CED6',
+      label: '未发布',
+    },
+    '1': {
+      color: '#0253D9',
+      label: '进行中',
+    },
+    '2': {
+      color: '#E53434',
+      label: '已截止',
+    },
+  };
+
+  useEffect(() => {
+    getGroupWorkInfo();
+    getExerciseList();
+    (async () => {
+      const res = await knowledgePointUtils.knowledgePointList({
+        page: 1,
+        pageSize: 10000,
+        id: -1,
+        teachingGoalId: -1,
+      });
+      if (res && res.code === 200) {
+        setKnowledgePointList(res.data);
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      const res = await GroupWork.knowledgePointSelectData({
+        teachingOutlineId: Number(outlineId),
+        page: 1,
+        pageSize: 1000,
+      });
+      if (res && res.code === 200) {
+        setTreeNodeData(res.data);
+      }
+    })();
+  }, []);
 
   return (
     <div>
@@ -127,13 +94,13 @@ const ExaminationWorkList: React.FC = (props: any) => {
           <Row>
             <Col span={10}>
               <Space>
-                <div className={styles['title']}>期末考试一</div>
+                <div className={styles['title']}>{workGroupObj.name}</div>
                 <Button
                   shape="round"
                   size="small"
-                  style={{ backgroundColor: '#C6CED6', color: 'white' }}
+                  style={{ backgroundColor: bgColor[workGroupObj.status]?.color, color: 'white' }}
                 >
-                  未发布
+                  {bgColor[workGroupObj.status]?.label}
                 </Button>
               </Space>
             </Col>
@@ -142,20 +109,20 @@ const ExaminationWorkList: React.FC = (props: any) => {
             <Col>
               <Space align="center">
                 <Button type="primary" shape="round" size="small">
-                  简单
+                  {workGroupObj.difficultyLevel}
                 </Button>
-                <span style={{ color: '#99B5D7' }}>建议时长：120分钟</span>
+                <span style={{ color: '#99B5D7' }}>
+                  建议时长：{workGroupObj.suggestFinishTime}分钟
+                </span>
               </Space>
             </Col>
           </Row>
-          <div style={{ marginTop: '10px' }}>
-            考试描述：本场考试是对Java对象掌握情况的一次考察...
-          </div>
+          <div style={{ marginTop: '10px' }}>习题描述：{workGroupObj.description}</div>
         </Col>
         {workGroupStatus == '0' && (
           <Col span={3}>
             <Button
-              onClick={() => setPublishVisible(true)}
+              onClick={() => publishWorkGroup(workGroupObj.id)}
               icon={<FieldTimeOutlined />}
               type="primary"
             >
@@ -171,57 +138,57 @@ const ExaminationWorkList: React.FC = (props: any) => {
           <Col span={24}>
             {!workList.length && !selectWorkVisible && !subjectiveWorkVisible && <Empty />}
             {/* 单选题 */}
-            {workList.filter((item) => item.type === 0).length > 0 && (
+            {workList.filter((item) => Number(item.type) === 0).length > 0 && (
               <div>
                 <Row>
                   <Col span={24}>
                     <Space align="center">
                       <p className={styles['title']}>一、单选题</p>
                       <p className={styles['tips']}>
-                        (共{workList.filter((item) => item.type === 0).length}题；共
-                        {calculateScore(workList, 0)}分)
+                        (共{workList.filter((item) => Number(item.type) === 0).length}题；共
+                        {calculateScore(workList, '0')}分)
                       </p>
                     </Space>
                   </Col>
                 </Row>
                 {workList
-                  .filter((item) => item.type === 0)
+                  .filter((item) => Number(item.type) === 0)
                   .map((item, index) => (
                     <div key={item.id} className={styles['project-item']}>
                       <Space>
                         <span>
-                          {index + 1}.{item.question_stems}
+                          {index + 1}.{item.questionStem}
                         </span>
                         <span>({item.score}分)</span>
                         <span style={{ color: 'green', fontWeight: 600 }}>
-                          (知识点：{item.knowledgePoint})
+                          (知识点：{getExercisePoint(item.knowledgePoint)})
                         </span>
                       </Space>
                       <div style={{ marginTop: '5px' }}>
                         <Space direction="vertical">
                           <Space>
-                            <Radio checked={item.question_answer === 'a'} disabled>
+                            <Radio checked={item.correctAnswer === 'a'} disabled>
                               A
                             </Radio>
-                            <span>{item.answer_a}</span>
+                            <span>{item.optionA}</span>
                           </Space>
                           <Space>
-                            <Radio checked={item.question_answer === 'b'} disabled>
+                            <Radio checked={item.correctAnswer === 'b'} disabled>
                               B
                             </Radio>
-                            <span>{item.answer_b}</span>
+                            <span>{item.optionB}</span>
                           </Space>
                           <Space>
-                            <Radio checked={item.question_answer === 'c'} disabled>
+                            <Radio checked={item.correctAnswer === 'c'} disabled>
                               C
                             </Radio>
-                            <span>{item.answer_c}</span>
+                            <span>{item.optionC}</span>
                           </Space>
                           <Space>
-                            <Radio checked={item.question_answer === 'd'} disabled>
+                            <Radio checked={item.correctAnswer === 'd'} disabled>
                               D
                             </Radio>
-                            <span>{item.answer_d}</span>
+                            <span>{item.optionD}</span>
                           </Space>
                         </Space>
                       </div>
@@ -254,35 +221,35 @@ const ExaminationWorkList: React.FC = (props: any) => {
               </div>
             )}
             {/* 主观题 */}
-            {workList.filter((item) => item.type === 1).length > 0 && (
+            {workList.filter((item) => Number(item.type) === 1).length > 0 && (
               <div>
                 <Row>
                   <Col span={24}>
                     <Space align="center">
                       <p className={styles['title']}>二、主观题</p>
                       <p className={styles['tips']}>
-                        (共{workList.filter((item) => item.type === 1).length}题；共
-                        {calculateScore(workList, 1)}分)
+                        (共{workList.filter((item) => Number(item.type) === 1).length}题；共
+                        {calculateScore(workList, '1')}分)
                       </p>
                     </Space>
                   </Col>
                 </Row>
                 {workList
-                  .filter((item) => item.type === 1)
+                  .filter((item) => Number(item.type) === 1)
                   .map((item, index) => (
                     <div key={item.id} className={styles['project-item']}>
                       <Space>
                         <span>
-                          {index + 1}.{item.question_stems}
+                          {index + 1}.{item.questionStem}
                         </span>
                         <span>({item.score}分)</span>
                         <span style={{ color: 'green', fontWeight: 600 }}>
-                          (知识点：{item.knowledgePoint})
+                          (知识点：{getExercisePoint(item.knowledgePoint)})
                         </span>
                       </Space>
                       <div style={{ marginTop: '5px' }}>
                         <p style={{ fontWeight: 600 }}>参考答案：</p>
-                        <p>{item.question_answer}</p>
+                        <p>{item.correctAnswer}</p>
                       </div>
                       {workGroupStatus == '0' && (
                         <Row>
@@ -313,10 +280,20 @@ const ExaminationWorkList: React.FC = (props: any) => {
               </div>
             )}
             {selectWorkVisible && (
-              <CreateSelectWork closeModal={() => setSelectWorkVisible(false)} />
+              <CreateSelectWork
+                workId={workId}
+                treeNodeData={treeNodeData}
+                closeModal={() => setSelectWorkVisible(false)}
+                getExerciseList={getExerciseList}
+              />
             )}
             {subjectiveWorkVisible && (
-              <CreateSubjectiveWork closeModal={() => setSubjectiveWorkVisible(false)} />
+              <CreateSubjectiveWork
+                workId={workId}
+                treeNodeData={treeNodeData}
+                closeModal={() => setSubjectiveWorkVisible(false)}
+                getExerciseList={getExerciseList}
+              />
             )}
           </Col>
         </Row>
@@ -337,24 +314,25 @@ const ExaminationWorkList: React.FC = (props: any) => {
       )}
 
       <Modal
-        title="发布考试"
+        title="发布作业"
         width={600}
         maskClosable={false}
         visible={publishVisible}
         onCancel={() => setPublishVisible(false)}
         footer={null}
+        destroyOnClose={true}
       >
         <div>
           <div className={styles['publish-modal-top']}>
-            <p>学生将立即收到考试</p>
-            <p>本操作只对"未发布"的考试有效</p>
+            <p>学生将立即收到作业</p>
+            <p>本操作只对"未发布"的作业有效</p>
           </div>
           <div className={styles['publish-modal-bottom']}>
             <Form
               name="basic"
               labelCol={{ span: 5 }}
               wrapperCol={{ span: 16 }}
-              initialValues={{ remember: true }}
+              // initialValues={{ remember: true }}
               onFinish={publishWork}
               onFinishFailed={onFinishFailed}
               autoComplete="off"
@@ -375,7 +353,7 @@ const ExaminationWorkList: React.FC = (props: any) => {
                   <Space align="baseline">
                     <p>截止时间：</p>
                     <Form.Item
-                      name="end_time"
+                      name="deadline_time"
                       rules={[{ required: true, message: '请输入截止时间' }]}
                     >
                       <DatePicker style={{ width: '150px' }} showTime />
@@ -386,7 +364,7 @@ const ExaminationWorkList: React.FC = (props: any) => {
               <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
                 <Space>
                   <Button type="primary" htmlType="submit" loading={upLoading}>
-                    发布考试
+                    发布作业
                   </Button>
                   <Button loading={upLoading} onClick={() => setPublishVisible(false)}>
                     暂不发布
@@ -400,6 +378,58 @@ const ExaminationWorkList: React.FC = (props: any) => {
     </div>
   );
 
+  function getExercisePoint(pointId: number) {
+    let knowledgePointTitle = '';
+    try {
+      knowledgePointList.forEach((item: any) => {
+        if (pointId === item.id) {
+          knowledgePointTitle = item.title;
+          throw new Error();
+        }
+      });
+    } catch {
+    } finally {
+      return knowledgePointTitle;
+    }
+  }
+
+  async function getExerciseList() {
+    const res = await ExerciseUtils.exerciseList({
+      page: 1,
+      pageSize: 10000,
+      category: '1',
+      workId,
+    });
+    if (res && res.code === 200) {
+      setWorkList(res.data);
+    }
+  }
+
+  async function getGroupWorkInfo() {
+    const res = await GroupWork.groupWorkList({
+      page: 1,
+      pageSize: 1000,
+      id: workId,
+      name: '',
+    });
+    if (res && res.code === 200) {
+      setWorkGroupObj(res.data[0]);
+    }
+  }
+
+  async function publishWorkGroup(id: number) {
+    const res = await GroupWork.groupWorkList({
+      page: 1,
+      pageSize: 1000,
+      id,
+      name: '',
+    });
+    if (res && res.code === 200) {
+      setInitialValues(res.data[0]);
+      setPublishVisible(true);
+    }
+  }
+
   function handleEditSelectWork() {
     setSelectWorkVisible(true);
   }
@@ -407,7 +437,7 @@ const ExaminationWorkList: React.FC = (props: any) => {
     setSubjectiveWorkVisible(true);
   }
 
-  function calculateScore(workLists: workItemType[], projectType: number) {
+  function calculateScore(workLists: any[], projectType: string) {
     return workLists
       .filter((item) => item.type === projectType)
       .reduce((preVal: number, item) => {
@@ -415,16 +445,33 @@ const ExaminationWorkList: React.FC = (props: any) => {
       }, 0);
   }
 
-  function publishWork() {
+  async function publishWork(value: any) {
     setUpLoading(true);
-    setTimeout(() => {
-      setUpLoading(false);
-      setPublishVisible(false);
-      message.success('发布成功');
-    }, 2000);
+    value.status = '1';
+    value.publishTime = value.publish_time.format('YYYY-MM-DD HH:mm:ss');
+    value.deadlineTime = value.deadline_time.format('YYYY-MM-DD HH:mm:ss');
+    const res = await GroupWork.updateGroupWork({
+      ...initialValues,
+      ...value,
+    });
+    if (res && res.code === 200) {
+      // 为每个学生创建一条数据
+      const result = await GroupWork.insertCompleteList({
+        workId: initialValues.id,
+        submitStatus: '0',
+      });
+
+      if (result && result.code === 200) {
+        setUpLoading(false);
+        message.success('发布成功');
+        setPublishVisible(false);
+        // window.location.reload();
+        history.push(`/examination`);
+      }
+    }
   }
 
   function onFinishFailed() {}
 };
 
-export default ExaminationWorkList;
+export default GroupWorkDetail;

@@ -1,9 +1,11 @@
-import { Row, Col, Space, InputNumber, Select, Button, message } from 'antd';
+import { Row, Col, Space, InputNumber, Select, Button, message, TreeSelect } from 'antd';
 import React, { useState } from 'react';
 import styles from './index.less';
 import Editor from 'for-editor';
+import { Exercise as ExerciseUtils } from '@/api/service';
 
 const { Option } = Select;
+const { TreeNode } = TreeSelect;
 
 const CreateSelectWork: React.FC = (props: any) => {
   const [questionsStems, setQuestionsStems] = useState<any>('');
@@ -13,10 +15,10 @@ const CreateSelectWork: React.FC = (props: any) => {
   const [answerD, setAnswerD] = useState<any>('');
   const [questionAnswer, setQuestionAnswer] = useState<string>('');
   const [score, setScore] = useState<number>(5);
-  const [knowledgePoint, setKnowledgePoint] = useState<string>('');
+  const [knowledgePoint, setKnowledgePoint] = useState<number | null>(null);
   const [projectType, setProjectType] = useState<number>(0);
 
-  const { closeModal } = props;
+  const { closeModal, treeNodeData, workId, getExerciseList } = props;
 
   return (
     <div className={styles['edit-work-wrap']}>
@@ -127,11 +129,27 @@ const CreateSelectWork: React.FC = (props: any) => {
       <div style={{ paddingLeft: '25px', marginTop: '20px' }}>
         <Space align="center">
           <span>知识点：</span>
-          <Select style={{ width: 150 }} onChange={(value: string) => setKnowledgePoint(value)}>
-            <Option value="1.1">知识点1</Option>
-            <Option value="1.2">知识点2</Option>
-            <Option value="1.3">知识点3</Option>
-          </Select>
+          <TreeSelect
+            // showSearch
+            style={{ width: '300px' }}
+            // value={teachingGoalId}
+            dropdownStyle={{ maxHeight: 350, overflow: 'auto' }}
+            placeholder="请选择知识点"
+            allowClear
+            // treeDefaultExpandAll
+            // treeData={treeNodeData}
+            onChange={(value) => {
+              setKnowledgePoint(value);
+            }}
+          >
+            {treeNodeData.map((parent, index: number) => (
+              <TreeNode selectable={false} value={parent.value} title={parent.title}>
+                {parent.children.map((child, innerIndex: number) => (
+                  <TreeNode value={child.value} title={child.title} />
+                ))}
+              </TreeNode>
+            ))}
+          </TreeSelect>
         </Space>
       </div>
       {/* 参考答案 */}
@@ -160,7 +178,7 @@ const CreateSelectWork: React.FC = (props: any) => {
   );
 
   /** 保存创建的习题 */
-  function saveProject() {
+  async function saveProject() {
     // 完整度校验
     if (!questionsStems) return message.info('请输入完整的题干');
     if (!answerA) return message.info('请完善A选项');
@@ -171,16 +189,24 @@ const CreateSelectWork: React.FC = (props: any) => {
     if (!knowledgePoint) return message.info('请完善知识点');
     if (!questionAnswer) return message.info('请完善参考答案');
     const obj = {
-      questionsStems,
-      answerA,
-      answerB,
-      answerC,
-      answerD,
+      questionStem: questionsStems,
+      optionA: answerA,
+      optionB: answerB,
+      optionC: answerC,
+      optionD: answerD,
+      correctAnswer: questionAnswer,
       score,
       knowledgePoint,
-      projectType,
+      category: '1',
+      type: projectType,
+      workId,
     };
-    console.log(obj);
+    const res = await ExerciseUtils.addExercise(obj);
+    if (res && res.code === 200) {
+      message.success('创建成功');
+      closeModal();
+      getExerciseList();
+    }
   }
 };
 

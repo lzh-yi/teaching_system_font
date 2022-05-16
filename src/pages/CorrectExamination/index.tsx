@@ -1,124 +1,58 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import styles from './index.less';
 import { Button, Col, Divider, InputNumber, message, Modal, Radio, Row, Space } from 'antd';
 import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
-import { noop } from '@/utils/common';
-import { history } from 'umi';
-
-/** 学生-考试 对应表 */
-type workItemType = {
-  id: number;
-  question_stems: string;
-  answer_a: string;
-  answer_b: string;
-  answer_c: string;
-  answer_d: string;
-  question_answer: string;
-  score: string | number;
-  knowledgePoint: string;
-  type: number;
-  user_name: string;
-  get_score: number;
-  select_answer: string;
-};
+import { useLocation, history } from 'umi';
+import {
+  examination as GroupWorkUtils,
+  Exercise as ExerciseUtils,
+  knowledgePoint as knowledgePointUtils,
+  workStatistics as workStatisticsUtils,
+  exerciseComplete as exerciseCompleteUtils,
+  UserUtils,
+} from '@/api/service';
+import dayjs from 'dayjs';
 
 const CorrectWork: React.FC = () => {
-  const [workList, setWorkList] = useState<workItemType[]>([
-    {
-      id: 0,
-      question_stems: '下面哪个是Java中表示类的关键字',
-      answer_a: 'class',
-      answer_b: 'static',
-      answer_c: 'public',
-      answer_d: 'int',
-      question_answer: 'a',
-      score: 5,
-      knowledgePoint: '知识点1',
-      type: 0,
-      select_answer: 'a',
-      user_name: '张三',
-      get_score: 5,
-    },
-    {
-      id: 1,
-      question_stems: '下面哪个是Java中表示类的修饰符',
-      answer_a: 'int',
-      answer_b: 'public',
-      answer_c: 'double',
-      answer_d: 'for',
-      question_answer: 'b',
-      score: 5,
-      knowledgePoint: '知识点2',
-      type: 0,
-      select_answer: 'c',
-      user_name: '李四',
-      get_score: 0,
-    },
-    {
-      id: 2,
-      question_stems: 'Java中创建对象的关键字是',
-      answer_a: 'for',
-      answer_b: 'create',
-      answer_c: 'double',
-      answer_d: 'new',
-      question_answer: 'd',
-      score: 5,
-      knowledgePoint: '知识点3',
-      type: 0,
-      select_answer: 'a',
-      user_name: '张三',
-      get_score: 0,
-    },
-    {
-      id: 3,
-      question_stems: '简述Java的类机制',
-      answer_a: '',
-      answer_b: '',
-      answer_c: '',
-      answer_d: '',
-      question_answer: 'Java的类机制...',
-      score: 20,
-      knowledgePoint: '知识点1',
-      type: 1,
-      select_answer: 'Java的类机制是...',
-      user_name: '张三',
-      get_score: 0,
-    },
-    {
-      id: 4,
-      question_stems: 'Java中创建对象的关键字是',
-      answer_a: 'for',
-      answer_b: 'create',
-      answer_c: 'double',
-      answer_d: 'new',
-      question_answer: 'd',
-      score: 5,
-      knowledgePoint: '知识点1',
-      type: 0,
-      select_answer: 'd',
-      user_name: '张三',
-      get_score: 5,
-    },
-    {
-      id: 5,
-      question_stems: '简述Java类的几种修饰符',
-      answer_a: '',
-      answer_b: '',
-      answer_c: '',
-      answer_d: '',
-      question_answer:
-        '在 Java 语言中提供了多个作用域修饰符，其中常用的有 public、private、protected、final、abstract、static、transient 和 volatile，这些修饰符有类修饰符、变量修饰符和方法修饰符。',
-      score: 20,
-      knowledgePoint: '知识点1',
-      type: 1,
-      select_answer: 'Java的修饰符...',
-      user_name: '张三',
-      get_score: 0,
-    },
-  ]);
+  const workGroupId = useLocation().query?.work_id;
+  const staticsId = useLocation().query?.statics_id;
+  const userId = useLocation().query?.user_id;
+
+  const [workList, setWorkList] = useState<any[]>([]);
   const [correctModalVisible, setCorrectModalVisible] = useState<boolean>(false);
   const [btnLoading, setBtnLoading] = useState<boolean>(false);
+  const [knowledgePointList, setKnowledgePointList] = useState<any[]>([]);
+  const [workGroupObj, setWorkGroupObj] = useState<any>({});
+  const [workStaticsObj, setWorkStaticsObj] = useState<any>({});
+  const [exerciseCompleteList, setExerciseCompleteList] = useState<any>([]);
+  const [userList, setUserList] = useState<any[]>([]);
+
+  useEffect(() => {
+    getGroupWorkInfo();
+    getExerciseList();
+    getworkStatics();
+    getExerciseCompleteList();
+    (async () => {
+      const res = await knowledgePointUtils.knowledgePointList({
+        page: 1,
+        pageSize: 10000,
+        id: -1,
+        teachingGoalId: -1,
+      });
+      if (res && res.code === 200) {
+        setKnowledgePointList(res.data);
+      }
+    })();
+    (async () => {
+      const res = (await UserUtils.userList({
+        type: 'student',
+      })) as any;
+      if (res && res.code === 200) {
+        setUserList(res.data);
+      }
+    })();
+  }, []);
 
   return (
     <PageContainer>
@@ -126,7 +60,7 @@ const CorrectWork: React.FC = () => {
         <Row>
           <Col span={10}>
             <Space>
-              <div className={styles['title']}>期末考试一</div>
+              <div className={styles['title']}>{workGroupObj.name}</div>
             </Space>
           </Col>
         </Row>
@@ -134,18 +68,24 @@ const CorrectWork: React.FC = () => {
           <Col>
             <Space align="center">
               <Button type="primary" shape="round" size="small">
-                简单
+                {workGroupObj.difficultyLevel}
               </Button>
-              <span style={{ color: '#99B5D7' }}>建议时长：120分钟</span>
+              <span style={{ color: '#99B5D7' }}>
+                建议时长：{workGroupObj.suggestFinishTime}分钟
+              </span>
             </Space>
           </Col>
         </Row>
-        <div style={{ marginTop: '10px' }}>考试描述：该组习题主要是熟悉Java的类机制...</div>
+        <div style={{ marginTop: '10px' }}>习题描述：{workGroupObj.description}</div>
         <Row style={{ marginTop: '10px' }}>
           <Col span={24}>
             <Space>
-              <span className={styles['submit-info']}>提交人：张三</span>
-              <span className={styles['submit-info']}>提交时间：2022-04-23 12:00:08</span>
+              <span className={styles['submit-info']}>
+                提交人：{getUserName(workStaticsObj.userId)}
+              </span>
+              <span className={styles['submit-info']}>
+                提交时间：{dayjs(workStaticsObj.submitTime).format('YYYY-MM-DD HH:mm:ss')}
+              </span>
             </Space>
           </Col>
         </Row>
@@ -154,40 +94,40 @@ const CorrectWork: React.FC = () => {
           <Row>
             <Col span={24}>
               {/* 单选题 */}
-              {workList.filter((item) => item.type === 0).length > 0 && (
+              {workList.filter((item) => item.type == 0).length > 0 && (
                 <div>
                   <Row>
                     <Col span={24}>
                       <Space align="center">
                         <p className={styles['title']}>一、单选题</p>
                         <p className={styles['tips']}>
-                          (共{workList.filter((item) => item.type === 0).length}题；共
+                          (共{workList.filter((item) => item.type == 0).length}题；共
                           {calculateScore(workList, 0)}分)
                         </p>
                       </Space>
                     </Col>
                   </Row>
                   {workList
-                    .filter((item) => item.type === 0)
+                    .filter((item) => item.type == 0)
                     .map((item, index) => (
                       <div key={item.id} className={styles['project-item']}>
                         <Row>
                           <Col span={20}>
                             <Space>
                               <span>
-                                {index + 1}.{item.question_stems}
+                                {index + 1}.{item.questionStem}
                               </span>
                               <span>({item.score}分)</span>
                               <span style={{ color: 'green', fontWeight: 600 }}>
-                                (知识点：{item.knowledgePoint})
+                                (知识点：{getExercisePoint(item.knowledgePoint)})
                               </span>
                             </Space>
                           </Col>
                           <Col span={2} push={2}>
-                            {item.select_answer === item.question_answer && (
+                            {getStudentDoneExercise(item.id).answer === item.correctAnswer && (
                               <CheckCircleOutlined style={{ color: 'green', fontSize: '20px' }} />
                             )}
-                            {item.select_answer !== item.question_answer && (
+                            {getStudentDoneExercise(item.id).answer !== item.correctAnswer && (
                               <CloseCircleOutlined style={{ color: 'red', fontSize: '20px' }} />
                             )}
                           </Col>
@@ -195,34 +135,46 @@ const CorrectWork: React.FC = () => {
                         <div style={{ marginTop: '5px' }}>
                           <Space direction="vertical">
                             <Space>
-                              <Radio checked={item.select_answer === 'a'} disabled>
+                              <Radio
+                                checked={getStudentDoneExercise(item.id).answer === 'a'}
+                                disabled
+                              >
                                 A
                               </Radio>
-                              <span>{item.answer_a}</span>
+                              <span>{item.optionA}</span>
                             </Space>
                             <Space>
-                              <Radio checked={item.select_answer === 'b'} disabled>
+                              <Radio
+                                checked={getStudentDoneExercise(item.id).answer === 'b'}
+                                disabled
+                              >
                                 B
                               </Radio>
-                              <span>{item.answer_b}</span>
+                              <span>{item.optionB}</span>
                             </Space>
                             <Space>
-                              <Radio checked={item.select_answer === 'c'} disabled>
+                              <Radio
+                                checked={getStudentDoneExercise(item.id).answer === 'c'}
+                                disabled
+                              >
                                 C
                               </Radio>
-                              <span>{item.answer_c}</span>
+                              <span>{item.optionC}</span>
                             </Space>
                             <Space>
-                              <Radio checked={item.select_answer === 'd'} disabled>
+                              <Radio
+                                checked={getStudentDoneExercise(item.id).answer === 'd'}
+                                disabled
+                              >
                                 D
                               </Radio>
-                              <span>{item.answer_d}</span>
+                              <span>{item.optionD}</span>
                             </Space>
-                            {item.question_answer !== item.select_answer && (
+                            {getStudentDoneExercise(item.id).answer !== item.correctAnswer && (
                               <Space>
                                 <span style={{ color: 'red', fontWeight: 'bold' }}>正确答案：</span>
                                 <span style={{ color: 'red', fontWeight: 'bold' }}>
-                                  {item.question_answer.toUpperCase()}
+                                  {item.correctAnswer.toUpperCase()}
                                 </span>
                               </Space>
                             )}
@@ -233,31 +185,31 @@ const CorrectWork: React.FC = () => {
                 </div>
               )}
               {/* 主观题 */}
-              {workList.filter((item) => item.type === 1).length > 0 && (
+              {workList.filter((item) => item.type == 1).length > 0 && (
                 <div>
                   <Row>
                     <Col span={24}>
                       <Space align="center">
                         <p className={styles['title']}>二、主观题</p>
                         <p className={styles['tips']}>
-                          (共{workList.filter((item) => item.type === 1).length}题)
+                          (共{workList.filter((item) => item.type == 1).length}题)
                         </p>
                       </Space>
                     </Col>
                   </Row>
                   {workList
-                    .filter((item) => item.type === 1)
+                    .filter((item) => item.type == 1)
                     .map((item, index) => (
                       <div key={item.id} className={styles['project-item']}>
                         <Row>
                           <Col span={18}>
                             <Space>
                               <span>
-                                {index + 1}.{item.question_stems}
+                                {index + 1}.{item.questionStem}
                               </span>
                               <span>({item.score}分)</span>
                               <span style={{ color: 'green', fontWeight: 600 }}>
-                                (知识点：{item.knowledgePoint})
+                                (知识点：{getExercisePoint(item.knowledgePoint)})
                               </span>
                             </Space>
                           </Col>
@@ -268,19 +220,23 @@ const CorrectWork: React.FC = () => {
                               <InputNumber
                                 min={0}
                                 max={item.score}
-                                defaultValue={0}
-                                onChange={noop}
+                                // defaultValue={0}
+                                onChange={(value: number) =>
+                                  handleCorrectWork(value, getStudentDoneExercise(item.id))
+                                }
                               />
                             </Space>
                           </Col>
                         </Row>
                         <div style={{ marginTop: '5px' }}>
                           <p style={{ fontWeight: 600, marginBottom: '5px' }}>提交答案：</p>
-                          <div className={styles['select-answer-wrap']}>{item.select_answer}</div>
+                          <div className={styles['select-answer-wrap']}>
+                            {getStudentDoneExercise(item.id).answer}
+                          </div>
                         </div>
                         <div style={{ marginTop: '10px' }}>
                           <p style={{ fontWeight: 600, marginBottom: '5px' }}>参考答案：</p>
-                          <p>{item.question_answer}</p>
+                          <p>{item.correctAnswer}</p>
                         </div>
                       </div>
                     ))}
@@ -294,7 +250,7 @@ const CorrectWork: React.FC = () => {
                 <Button type="primary" onClick={() => setCorrectModalVisible(true)}>
                   提交
                 </Button>
-                <Button onClick={() => history.push('/group_work/detail')}>取消</Button>
+                <Button onClick={() => history.push('/examination')}>取消</Button>
               </Space>
             </Col>
           </Row>
@@ -315,27 +271,145 @@ const CorrectWork: React.FC = () => {
           </Button>,
         ]}
       >
-        <p>提交批改之后将自动生成分数，不可修改</p>
+        <p>提交批改之后将自动生成分数</p>
         <p>确定提交吗？</p>
       </Modal>
     </PageContainer>
   );
 
-  function calculateScore(workLists: workItemType[], projectType: number) {
+  async function handleCorrectWork(score: number, object: any) {
+    if (!score) score = 0;
+    object.score = score;
+    const res = await exerciseCompleteUtils.updateExerciseComplete(object);
+    // if (res && res.code === 200) {
+    //   message.success('success');
+    // }
+  }
+
+  function calculateScore(workLists: any, projectType: number) {
     return workLists
-      .filter((item) => item.type === projectType)
+      .filter((item) => item.type == projectType)
       .reduce((preVal: number, item) => {
-        return preVal + Number(item.get_score);
+        return preVal + Number(item.score);
       }, 0);
   }
 
-  function handleSubmitCorrect() {
+  async function handleSubmitCorrect() {
     setBtnLoading(true);
-    setTimeout(() => {
+    let score = await calculateScore();
+    const data = {
+      id: workStaticsObj.id,
+      workId: workGroupId,
+      userId,
+      submitStatus: '1',
+      submitTime: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+      correctStatus: '1',
+      category: '1',
+      score,
+    };
+    const res = await workStatisticsUtils.updateStatistics(data);
+    if (res && res.code === 200) {
       setBtnLoading(false);
       setCorrectModalVisible(false);
       message.success('提交批改成功');
-    }, 1000);
+      history.push('/examination');
+    }
+
+    /**计算总分 */
+    async function calculateScore() {
+      const res = await exerciseCompleteUtils.exerciseCompleteList({
+        userId,
+      });
+      let score = 0;
+      if (res && res.code === 200) {
+        // 筛选出目标题目
+        let exerciseIDs: number[] = [];
+        for (const value of workList) {
+          exerciseIDs.push(value.id);
+        }
+        for (const value of res.data) {
+          if (exerciseIDs.includes(value.exerciseId)) score += value.score;
+        }
+        return score;
+      }
+      return 0;
+    }
+  }
+
+  async function getGroupWorkInfo() {
+    const res = await GroupWorkUtils.groupWorkList({
+      page: 1,
+      pageSize: 1000,
+      id: workGroupId,
+      name: '',
+    });
+    if (res && res.code === 200) {
+      setWorkGroupObj(res.data[0]);
+    }
+  }
+
+  async function getExerciseList() {
+    const res = await ExerciseUtils.exerciseList({
+      page: 1,
+      pageSize: 10000,
+      category: '1',
+      workId: workGroupId,
+    });
+    if (res && res.code === 200) {
+      setWorkList(res.data);
+    }
+  }
+
+  async function getworkStatics() {
+    const res = await workStatisticsUtils.completeList({
+      page: 1,
+      pageSize: 10000,
+      category: '1',
+      workId: workGroupId,
+      id: Number(staticsId),
+    });
+    if (res && res.code === 200) {
+      setWorkStaticsObj(res.data[0]);
+    }
+  }
+
+  async function getExerciseCompleteList() {
+    const res = await exerciseCompleteUtils.exerciseCompleteList({
+      userId,
+    });
+    if (res && res.code === 200) {
+      setExerciseCompleteList(res.data);
+    }
+  }
+
+  function getExercisePoint(pointId: number) {
+    let knowledgePointTitle = '';
+    try {
+      knowledgePointList.forEach((item: any) => {
+        if (pointId === item.id) {
+          knowledgePointTitle = item.title;
+          throw new Error();
+        }
+      });
+    } catch {
+    } finally {
+      return knowledgePointTitle;
+    }
+  }
+
+  function getStudentDoneExercise(exerciseId: number) {
+    for (const value of exerciseCompleteList) {
+      if (exerciseId === value.exerciseId) {
+        return value;
+      }
+    }
+    return {};
+  }
+
+  function getUserName(userId: number) {
+    for (const value of userList) {
+      if (userId === value.id) return value.userName;
+    }
   }
 };
 

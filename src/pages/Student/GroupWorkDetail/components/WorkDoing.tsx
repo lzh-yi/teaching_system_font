@@ -6,7 +6,6 @@ import {
   Space,
   Empty,
   Radio,
-  Popconfirm,
   Divider,
   Button,
   Input,
@@ -14,7 +13,6 @@ import {
   message,
 } from 'antd';
 import styles from './index.less';
-import { noop } from '@/utils/common';
 import { getGlobalUser } from '../../../../constant/index';
 import {
   GroupWork,
@@ -28,81 +26,7 @@ import { history } from 'umi';
 const WorkDoing: React.FC = (props: any) => {
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [btnLoading, setBtnLoading] = useState<boolean>(false);
-  const [workList, setWorkList] = useState<any[]>([
-    {
-      id: 0,
-      question_stems: '下面哪个是Java中表示类的关键字',
-      answer_a: 'class',
-      answer_b: 'static',
-      answer_c: 'public',
-      answer_d: 'int',
-      question_answer: 'a',
-      score: 5,
-      knowledgePoint: '知识点1',
-      type: 0,
-    },
-    {
-      id: 1,
-      question_stems: '下面哪个是Java中表示类的修饰符',
-      answer_a: 'int',
-      answer_b: 'public',
-      answer_c: 'double',
-      answer_d: 'for',
-      question_answer: 'b',
-      score: 5,
-      knowledgePoint: '知识点2',
-      type: 0,
-    },
-    {
-      id: 2,
-      question_stems: 'Java中创建对象的关键字是',
-      answer_a: 'for',
-      answer_b: 'create',
-      answer_c: 'double',
-      answer_d: 'new',
-      question_answer: 'd',
-      score: 5,
-      knowledgePoint: '知识点3',
-      type: 0,
-    },
-    {
-      id: 3,
-      question_stems: '简述Java的类机制',
-      answer_a: '',
-      answer_b: '',
-      answer_c: '',
-      answer_d: '',
-      question_answer: 'Java的类机制...',
-      score: 20,
-      knowledgePoint: '知识点1',
-      type: 1,
-    },
-    {
-      id: 4,
-      question_stems: 'Java中创建对象的关键字是',
-      answer_a: 'for',
-      answer_b: 'create',
-      answer_c: 'double',
-      answer_d: 'new',
-      question_answer: 'd',
-      score: 5,
-      knowledgePoint: '知识点1',
-      type: 0,
-    },
-    {
-      id: 5,
-      question_stems: '简述Java类的几种修饰符',
-      answer_a: '',
-      answer_b: '',
-      answer_c: '',
-      answer_d: '',
-      question_answer:
-        '在 Java 语言中提供了多个作用域修饰符，其中常用的有 public、private、protected、final、abstract、static、transient 和 volatile，这些修饰符有类修饰符、变量修饰符和方法修饰符。',
-      score: 20,
-      knowledgePoint: '知识点1',
-      type: 1,
-    },
-  ]);
+  const [workList, setWorkList] = useState<any[]>([]);
   const [exerciseTotal, setExerciseTotal] = useState<number>(0);
   const [workGroupObj, setWorkGroupObj] = useState<any>({});
   const [completeResultObj, setCompleteResultObj] = useState<any>({});

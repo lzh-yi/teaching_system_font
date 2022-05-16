@@ -3,14 +3,16 @@ import { PageContainer } from '@ant-design/pro-layout';
 import { Row, Col, Tabs } from 'antd';
 import styles from './index.less';
 import { useLocation } from 'umi';
-import ExaminationCompleteList from '@/pages/ExaminationDetail/components/ExaminationCompleteList';
-import ExaminationWorkList from '@/pages/ExaminationDetail/components/ExaminationWorkList';
+import GroupWorkList from '@/pages/ExaminationDetail/components/ExaminationWorkList';
+import WorkCompleteList from '@/pages/ExaminationDetail/components/ExaminationCompleteList';
 
 const { TabPane } = Tabs;
 
-const ExaminationDetail: React.FC = () => {
+const GroupWorkDetail: React.FC = () => {
   // 标记当前习题组是否是未发布状态
-  const workGroupStatus = useLocation().query?.examination_status;
+  const workGroupStatus = useLocation().query?.work_status;
+  const workId = useLocation().query?.work_id;
+  const outlineId = useLocation().query?.outline_id;
 
   return (
     <PageContainer>
@@ -19,11 +21,15 @@ const ExaminationDetail: React.FC = () => {
           <Col span={24}>
             <Tabs defaultActiveKey="1" onChange={onTabChange}>
               <TabPane tab="题目列表" key="1">
-                <ExaminationWorkList workGroupStatus={workGroupStatus} />
+                <GroupWorkList
+                  workGroupStatus={workGroupStatus}
+                  workId={workId}
+                  outlineId={outlineId}
+                />
               </TabPane>
               {Number(workGroupStatus) !== 0 && (
                 <TabPane tab="完成情况" key="2">
-                  <ExaminationCompleteList />
+                  <WorkCompleteList workId={workId} />
                 </TabPane>
               )}
             </Tabs>
@@ -38,4 +44,4 @@ const ExaminationDetail: React.FC = () => {
   }
 };
 
-export default ExaminationDetail;
+export default GroupWorkDetail;

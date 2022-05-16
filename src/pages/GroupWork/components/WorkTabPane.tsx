@@ -204,7 +204,7 @@ const WorkTabPane: React.FC = (props: any) => {
                   <Space align="baseline">
                     <p>发布时间：</p>
                     <Form.Item
-                      name="publishTime"
+                      name="publish_time"
                       rules={[{ required: true, message: '请输入发布时间' }]}
                     >
                       <DatePicker style={{ width: '150px' }} showTime />
@@ -215,7 +215,7 @@ const WorkTabPane: React.FC = (props: any) => {
                   <Space align="baseline">
                     <p>截止时间：</p>
                     <Form.Item
-                      name="deadlineTime"
+                      name="deadline_time"
                       rules={[{ required: true, message: '请输入截止时间' }]}
                     >
                       <DatePicker style={{ width: '150px' }} showTime />
@@ -346,7 +346,7 @@ const WorkTabPane: React.FC = (props: any) => {
           <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
             <Space>
               <Button type="primary" htmlType="submit" loading={upLoading}>
-                编辑
+                确认
               </Button>
               <Button loading={upLoading} onClick={() => setEditVisible(false)}>
                 取消
@@ -361,7 +361,7 @@ const WorkTabPane: React.FC = (props: any) => {
   async function editWorkGroup(id: number) {
     const res = await GroupWork.groupWorkList({
       page: 1,
-      pageSize: 100,
+      pageSize: 1000,
       id,
       name: '',
     });
@@ -374,7 +374,7 @@ const WorkTabPane: React.FC = (props: any) => {
   async function deadlineGroupWork(id: number) {
     const res = await GroupWork.groupWorkList({
       page: 1,
-      pageSize: 100,
+      pageSize: 1000,
       id,
       name: '',
     });
@@ -444,7 +444,7 @@ const WorkTabPane: React.FC = (props: any) => {
   async function publishWorkGroup(id: number) {
     const res = await GroupWork.groupWorkList({
       page: 1,
-      pageSize: 100,
+      pageSize: 1000,
       id,
       name: '',
     });
@@ -457,8 +457,8 @@ const WorkTabPane: React.FC = (props: any) => {
   async function publishWork(value: any) {
     setUpLoading(true);
     value.status = '1';
-    value.publishTime = dayjs(value.publishTime).format('YYYY-MM-DD HH:mm:ss');
-    value.deadlineTime = dayjs(value.deadlineTime).format('YYYY-MM-DD HH:mm:ss');
+    value.publishTime = value.publish_time.format('YYYY-MM-DD HH:mm:ss');
+    value.deadlineTime = value.deadline_time.format('YYYY-MM-DD HH:mm:ss');
     // console.log({
     //   ...initialValues,
     //   ...value,

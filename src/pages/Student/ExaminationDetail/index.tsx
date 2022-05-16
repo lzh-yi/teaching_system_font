@@ -7,11 +7,17 @@ import { useLocation } from 'umi';
 const GroupWorkDetail: React.FC = () => {
   // 标记当前习题组是否是未发布状态
   const workGroupStatus = useLocation().query?.work_status;
+  const workGroup = useLocation().query?.work_group;
+  const workStatisticsId = useLocation().query?.work_statistics;
 
   return (
     <div>
-      {workGroupStatus === '1' && <WorkDoing />}
-      {workGroupStatus === '2' && <WorkCompleteList />}
+      {workGroupStatus === '0' && (
+        <WorkDoing workGroup={workGroup} workStatisticsId={workStatisticsId} />
+      )}
+      {workGroupStatus === '1' && (
+        <WorkCompleteList workGroupId={workGroup} staticsId={workStatisticsId} />
+      )}
     </div>
   );
 };

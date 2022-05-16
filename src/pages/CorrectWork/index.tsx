@@ -251,7 +251,7 @@ const CorrectWork: React.FC = () => {
                 <Button type="primary" onClick={() => setCorrectModalVisible(true)}>
                   提交
                 </Button>
-                <Button onClick={() => history.push('/group_work/detail')}>取消</Button>
+                <Button onClick={() => history.push('/group_work')}>取消</Button>
               </Space>
             </Col>
           </Row>

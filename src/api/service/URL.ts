@@ -56,6 +56,20 @@ const GroupWork = {
   updateCompleteList: '/api/group_work/update_complete_list',
 };
 
+/** 考试 */
+const examination = {
+  // 添加题组
+  addGroupWork: '/api/examination_work/add',
+  // 题组列表
+  groupWorkList: '/api/examination_work/list',
+  // 更新题组
+  updateGroupWork: '/api/examination_work/update',
+  // 下拉列表数据
+  knowledgePointSelectDataByGroup: '/api/examination_work/select_data',
+  insertCompleteList: '/api/examination_work/insert_complete_list',
+  updateCompleteList: '/api/examination_work/update_complete_list',
+};
+
 /** 习题 */
 const exercise = {
   // 添加习题
@@ -93,4 +107,5 @@ export default {
   ...user,
   ...statistics,
   ...exerciseComplete,
+  examination,
 };
