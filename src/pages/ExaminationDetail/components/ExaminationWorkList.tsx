@@ -156,9 +156,9 @@ const GroupWorkDetail: React.FC = (props: any) => {
                   .map((item, index) => (
                     <div key={item.id} className={styles['project-item']}>
                       <Space>
-                        <span>
+                        <pre style={{ marginBottom: '0px' }}>
                           {index + 1}.{item.questionStem}
-                        </span>
+                        </pre>
                         <span>({item.score}分)</span>
                         <span style={{ color: 'green', fontWeight: 600 }}>
                           (知识点：{getExercisePoint(item.knowledgePoint)})
@@ -170,25 +170,25 @@ const GroupWorkDetail: React.FC = (props: any) => {
                             <Radio checked={item.correctAnswer === 'a'} disabled>
                               A
                             </Radio>
-                            <span>{item.optionA}</span>
+                            <pre style={{ marginBottom: '0px' }}>{item.optionA}</pre>
                           </Space>
                           <Space>
                             <Radio checked={item.correctAnswer === 'b'} disabled>
                               B
                             </Radio>
-                            <span>{item.optionB}</span>
+                            <pre style={{ marginBottom: '0px' }}>{item.optionB}</pre>
                           </Space>
                           <Space>
                             <Radio checked={item.correctAnswer === 'c'} disabled>
                               C
                             </Radio>
-                            <span>{item.optionC}</span>
+                            <pre style={{ marginBottom: '0px' }}>{item.optionC}</pre>
                           </Space>
                           <Space>
                             <Radio checked={item.correctAnswer === 'd'} disabled>
                               D
                             </Radio>
-                            <span>{item.optionD}</span>
+                            <pre style={{ marginBottom: '0px' }}>{item.optionD}</pre>
                           </Space>
                         </Space>
                       </div>
@@ -239,9 +239,9 @@ const GroupWorkDetail: React.FC = (props: any) => {
                   .map((item, index) => (
                     <div key={item.id} className={styles['project-item']}>
                       <Space>
-                        <span>
+                        <pre style={{ marginBottom: '0px' }}>
                           {index + 1}.{item.questionStem}
-                        </span>
+                        </pre>
                         <span>({item.score}分)</span>
                         <span style={{ color: 'green', fontWeight: 600 }}>
                           (知识点：{getExercisePoint(item.knowledgePoint)})
@@ -249,7 +249,7 @@ const GroupWorkDetail: React.FC = (props: any) => {
                       </Space>
                       <div style={{ marginTop: '5px' }}>
                         <p style={{ fontWeight: 600 }}>参考答案：</p>
-                        <p>{item.correctAnswer}</p>
+                        <pre style={{ marginBottom: '0px' }}>{item.correctAnswer}</pre>
                       </div>
                       {workGroupStatus == '0' && (
                         <Row>

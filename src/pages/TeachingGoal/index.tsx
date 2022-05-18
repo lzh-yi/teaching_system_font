@@ -63,7 +63,7 @@ const TeachingGoal: React.FC = () => {
       {
         title: '操作',
         align: 'center',
-        width: 150,
+        width: 50,
         dataIndex: 'id',
         render(value: number) {
           return (

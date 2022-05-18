@@ -457,8 +457,8 @@ const WorkTabPane: React.FC = (props: any) => {
   async function publishWork(value: any) {
     setUpLoading(true);
     value.status = '1';
-    value.publishTime = value.publishTime.format('YYYY-MM-DD HH:mm:ss');
-    value.deadlineTime = value.deadlineTime.format('YYYY-MM-DD HH:mm:ss');
+    value.publishTime = value.publish_time.format('YYYY-MM-DD HH:mm:ss');
+    value.deadlineTime = value.deadline_time.format('YYYY-MM-DD HH:mm:ss');
     // console.log({
     //   ...initialValues,
     //   ...value,

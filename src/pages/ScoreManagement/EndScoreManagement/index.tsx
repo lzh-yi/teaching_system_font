@@ -1,13 +1,15 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import tableStyles from '@/assets/styles/table.less';
-import { columnConfig, tableDataVal } from './constant';
+import { columnConfig } from './constant';
 import { Table } from 'antd';
+import { scoreManagement } from '@/api/service';
 
 const EndScoreManagement: React.FC = () => {
   const [searchCondition, setSearchCondition] = useState({ page: 1, pageSize: 20 });
   const [totalData, setTotalData] = useState<number>(0);
   const [tableLoading, setTableLoading] = useState<boolean>(false);
+  const [tableDataVal, setTableDataVal] = useState<boolean>(false);
 
   const pagination = {
     showSizeChanger: true,
@@ -24,6 +26,10 @@ const EndScoreManagement: React.FC = () => {
     },
   };
 
+  useEffect(() => {
+    getFinalScoreList();
+  }, []);
+
   return (
     <PageContainer>
       <div className={tableStyles['table-wrap']}>
@@ -38,6 +44,15 @@ const EndScoreManagement: React.FC = () => {
       </div>
     </PageContainer>
   );
+
+  async function getFinalScoreList() {
+    setTableLoading(true);
+    const res = await scoreManagement.finalScoreList();
+    if (res && res.code === 200) {
+      setTableDataVal(res.data);
+      setTableLoading(false);
+    }
+  }
 };
 
 export default EndScoreManagement;

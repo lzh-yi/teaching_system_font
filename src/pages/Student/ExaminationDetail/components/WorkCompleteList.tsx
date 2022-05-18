@@ -105,9 +105,9 @@ const WorkCompleteList: React.FC = (props: any) => {
                         <Row>
                           <Col span={20}>
                             <Space>
-                              <span>
+                              <pre style={{ marginBottom: '0px' }}>
                                 {index + 1}.{item.questionStem}
-                              </span>
+                              </pre>
                               <span>({item.score}分)</span>
                               {/* <span style={{ color: 'green', fontWeight: 600 }}>
                                 (知识点：{item.knowledgePoint})
@@ -134,7 +134,7 @@ const WorkCompleteList: React.FC = (props: any) => {
                               >
                                 A
                               </Radio>
-                              <span>{item.optionA}</span>
+                              <pre style={{ marginBottom: '0px' }}>{item.optionA}</pre>
                             </Space>
                             <Space>
                               <Radio
@@ -143,7 +143,7 @@ const WorkCompleteList: React.FC = (props: any) => {
                               >
                                 B
                               </Radio>
-                              <span>{item.optionB}</span>
+                              <pre style={{ marginBottom: '0px' }}>{item.optionB}</pre>
                             </Space>
                             <Space>
                               <Radio
@@ -152,7 +152,7 @@ const WorkCompleteList: React.FC = (props: any) => {
                               >
                                 C
                               </Radio>
-                              <span>{item.optionC}</span>
+                              <pre style={{ marginBottom: '0px' }}>{item.optionC}</pre>
                             </Space>
                             <Space>
                               <Radio
@@ -161,7 +161,7 @@ const WorkCompleteList: React.FC = (props: any) => {
                               >
                                 D
                               </Radio>
-                              <span>{item.optionD}</span>
+                              <pre style={{ marginBottom: '0px' }}>{item.optionD}</pre>
                             </Space>
                             {workStaticsObj.correctStatus === '1' &&
                               getStudentDoneExercise(item.id).answer !== item.correctAnswer && (
@@ -201,9 +201,9 @@ const WorkCompleteList: React.FC = (props: any) => {
                         <Row>
                           <Col span={18}>
                             <Space>
-                              <span>
+                              <pre style={{ marginBottom: '0px' }}>
                                 {index + 1}.{item.questionStem}
-                              </span>
+                              </pre>
                               <span>({item.score}分)</span>
                               {/* <span style={{ color: 'green', fontWeight: 600 }}>
                                 (知识点：{item.knowledgePoint})
@@ -224,14 +224,17 @@ const WorkCompleteList: React.FC = (props: any) => {
                         </Row>
                         <div style={{ marginTop: '5px' }}>
                           <p style={{ fontWeight: 600, marginBottom: '5px' }}>提交答案：</p>
-                          <div className={styles['select-answer-wrap']}>
+                          <pre
+                            style={{ marginBottom: '0px' }}
+                            className={styles['select-answer-wrap']}
+                          >
                             {getStudentDoneExercise(item.id).answer}
-                          </div>
+                          </pre>
                         </div>
                         {workStaticsObj.correctStatus === '1' && (
                           <div style={{ marginTop: '10px' }}>
                             <p style={{ fontWeight: 600, marginBottom: '5px' }}>参考答案：</p>
-                            <p>{item.correctAnswer}</p>
+                            <pre style={{ marginBottom: '0px' }}>{item.correctAnswer}</pre>
                           </div>
                         )}
                       </div>

@@ -11,7 +11,7 @@ const { TreeNode } = TreeSelect;
 const CreateSubjectiveWork: React.FC = (props: any) => {
   const [questionsStems, setQuestionsStems] = useState<any>('');
   const [questionAnswer, setQuestionAnswer] = useState<string>('');
-  const [score, setScore] = useState<number>(5);
+  const [score, setScore] = useState<number>(10);
   const [knowledgePoint, setKnowledgePoint] = useState<string>('');
   const [projectType, setProjectType] = useState<number>(1);
 
@@ -68,7 +68,7 @@ const CreateSubjectiveWork: React.FC = (props: any) => {
           <InputNumber
             min={5}
             max={10}
-            defaultValue={5}
+            defaultValue={10}
             onChange={(value: number) => setScore(value)}
           />
           <span>分</span>

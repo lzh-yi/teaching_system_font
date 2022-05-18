@@ -14,7 +14,7 @@ const CreateSelectWork: React.FC = (props: any) => {
   const [answerC, setAnswerC] = useState<any>('');
   const [answerD, setAnswerD] = useState<any>('');
   const [questionAnswer, setQuestionAnswer] = useState<string>('');
-  const [score, setScore] = useState<number>(5);
+  const [score, setScore] = useState<number>(10);
   const [knowledgePoint, setKnowledgePoint] = useState<number | null>(null);
   const [projectType, setProjectType] = useState<number>(0);
 
@@ -119,7 +119,7 @@ const CreateSelectWork: React.FC = (props: any) => {
           <InputNumber
             min={5}
             max={10}
-            defaultValue={5}
+            defaultValue={10}
             onChange={(value: number) => setScore(value)}
           />
           <span>分</span>

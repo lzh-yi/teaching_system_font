@@ -115,9 +115,9 @@ const CorrectWork: React.FC = () => {
                         <Row>
                           <Col span={20}>
                             <Space>
-                              <span>
+                              <pre style={{ marginBottom: '0px' }}>
                                 {index + 1}.{item.questionStem}
-                              </span>
+                              </pre>
                               <span>({item.score}分)</span>
                               <span style={{ color: 'green', fontWeight: 600 }}>
                                 (知识点：{getExercisePoint(item.knowledgePoint)})
@@ -142,7 +142,7 @@ const CorrectWork: React.FC = () => {
                               >
                                 A
                               </Radio>
-                              <span>{item.optionA}</span>
+                              <pre style={{ marginBottom: '0px' }}>{item.optionA}</pre>
                             </Space>
                             <Space>
                               <Radio
@@ -151,7 +151,7 @@ const CorrectWork: React.FC = () => {
                               >
                                 B
                               </Radio>
-                              <span>{item.optionB}</span>
+                              <pre style={{ marginBottom: '0px' }}>{item.optionB}</pre>
                             </Space>
                             <Space>
                               <Radio
@@ -160,7 +160,7 @@ const CorrectWork: React.FC = () => {
                               >
                                 C
                               </Radio>
-                              <span>{item.optionC}</span>
+                              <pre style={{ marginBottom: '0px' }}>{item.optionC}</pre>
                             </Space>
                             <Space>
                               <Radio
@@ -169,7 +169,7 @@ const CorrectWork: React.FC = () => {
                               >
                                 D
                               </Radio>
-                              <span>{item.optionD}</span>
+                              <pre style={{ marginBottom: '0px' }}>{item.optionD}</pre>
                             </Space>
                             {getStudentDoneExercise(item.id).answer !== item.correctAnswer && (
                               <Space>
@@ -205,9 +205,9 @@ const CorrectWork: React.FC = () => {
                         <Row>
                           <Col span={18}>
                             <Space>
-                              <span>
+                              <pre style={{ marginBottom: '0px' }}>
                                 {index + 1}.{item.questionStem}
-                              </span>
+                              </pre>
                               <span>({item.score}分)</span>
                               <span style={{ color: 'green', fontWeight: 600 }}>
                                 (知识点：{getExercisePoint(item.knowledgePoint)})
@@ -231,13 +231,16 @@ const CorrectWork: React.FC = () => {
                         </Row>
                         <div style={{ marginTop: '5px' }}>
                           <p style={{ fontWeight: 600, marginBottom: '5px' }}>提交答案：</p>
-                          <div className={styles['select-answer-wrap']}>
+                          <pre
+                            style={{ marginBottom: '0px' }}
+                            className={styles['select-answer-wrap']}
+                          >
                             {getStudentDoneExercise(item.id).answer}
-                          </div>
+                          </pre>
                         </div>
                         <div style={{ marginTop: '10px' }}>
                           <p style={{ fontWeight: 600, marginBottom: '5px' }}>参考答案：</p>
-                          <p>{item.correctAnswer}</p>
+                          <pre style={{ marginBottom: '0px' }}>{item.correctAnswer}</pre>
                         </div>
                       </div>
                     ))}

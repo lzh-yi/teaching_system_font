@@ -97,6 +97,13 @@ const exerciseComplete = {
   updateExerciseComplete: '/api/exercise_complete/update',
 };
 
+/** 学生成绩情况 */
+const scoreManagement = {
+  scoreDetail: '/api/score_management/score_detail',
+  scoreDetailByWorkId: '/api/score_management/score_detail_byId',
+  finalScoreList: '/api/score_management/final_score',
+};
+
 export default {
   ...teachingOutline,
   ...teachingSchedule,
@@ -108,4 +115,5 @@ export default {
   ...statistics,
   ...exerciseComplete,
   examination,
+  ...scoreManagement,
 };

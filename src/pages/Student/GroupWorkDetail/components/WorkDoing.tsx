@@ -1,17 +1,6 @@
 import { PageContainer } from '@ant-design/pro-layout';
 import React, { useEffect, useState } from 'react';
-import {
-  Row,
-  Col,
-  Space,
-  Empty,
-  Radio,
-  Divider,
-  Button,
-  Input,
-  Modal,
-  message,
-} from 'antd';
+import { Row, Col, Space, Empty, Radio, Divider, Button, Input, Modal, message } from 'antd';
 import styles from './index.less';
 import { getGlobalUser } from '../../../../constant/index';
 import {
@@ -101,9 +90,9 @@ const WorkDoing: React.FC = (props: any) => {
                     .map((item, index) => (
                       <div key={item.id} className={styles['project-item']}>
                         <Space>
-                          <span>
+                          <pre style={{ marginBottom: '0px' }}>
                             {index + 1}.{item.questionStem}
-                          </span>
+                          </pre>
                           <span>({item.score}分)</span>
                           {/* <span style={{ color: 'green', fontWeight: 600 }}>
                             (知识点：{item.knowledgePoint})
@@ -121,10 +110,35 @@ const WorkDoing: React.FC = (props: any) => {
                             }
                           >
                             <Space direction="vertical">
-                              <Radio value="a">A</Radio>
-                              <Radio value="b">B</Radio>
-                              <Radio value="c">C</Radio>
-                              <Radio value="d">D</Radio>
+                              <Radio value="a">
+                                <Space>
+                                  A
+                                  <pre
+                                    style={{
+                                      marginBottom: '0px',
+                                      display: 'inline-block',
+                                      verticalAlign: 'top',
+                                    }}
+                                  >
+                                    {item.optionA}
+                                  </pre>
+                                </Space>
+                              </Radio>
+                              <Radio value="b">
+                                <Space>
+                                  B<pre style={{ marginBottom: '0px' }}>{item.optionB}</pre>
+                                </Space>
+                              </Radio>
+                              <Radio value="c">
+                                <Space>
+                                  C<pre style={{ marginBottom: '0px' }}>{item.optionC}</pre>
+                                </Space>
+                              </Radio>
+                              <Radio value="d">
+                                <Space>
+                                  D<pre style={{ marginBottom: '0px' }}>{item.optionD}</pre>
+                                </Space>
+                              </Radio>
                             </Space>
                           </Radio.Group>
                         </div>
@@ -151,9 +165,9 @@ const WorkDoing: React.FC = (props: any) => {
                     .map((item, index) => (
                       <div key={item.id} className={styles['project-item']}>
                         <Space>
-                          <span>
+                          <pre style={{ marginBottom: '0px' }}>
                             {index + 1}.{item.questionStem}
-                          </span>
+                          </pre>
                           <span>({item.score}分)</span>
                           {/* <span style={{ color: 'green', fontWeight: 600 }}>
                             (知识点：{item.knowledgePoint})
@@ -235,7 +249,6 @@ const WorkDoing: React.FC = (props: any) => {
     setBtnLoading(true);
     // 提交习题
     for (const value of Object.values(completeResultObj)) {
-      console.log('xxxxxxxxxxxxxxxxxxx');
       const res = await exerciseCompleteUtils.addExerciseComplete(value);
       if (res && res.code !== 200) {
         return message.warn('提交失败');

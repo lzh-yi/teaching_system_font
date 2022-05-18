@@ -2,135 +2,26 @@ import React, { useEffect, useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import tableStyles from '@/assets/styles/table.less';
 import { Button, Col, Modal, Row, Table } from 'antd';
-import { workColumnConfig, tableDataVal, workDetailColumnConfig, tableDataVal1 } from './constant';
+import { workColumnConfig, workDetailColumnConfig } from './constant';
 import styles from './index.less';
 import './index.less';
 import * as echarts from 'echarts';
+import { scoreManagement } from '@/api/service';
 
-const ExaminationManagement: React.FC = () => {
+const WorkManagement: React.FC = () => {
   const [searchCondition, setSearchCondition] = useState({ page: 1, pageSize: 20 });
   const [totalData, setTotalData] = useState<number>(0);
   const [tableLoading, setTableLoading] = useState<boolean>(false);
+  const [tableLoading1, setTableLoading1] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [rateOption, setRateOption] = useState<{}>({});
   const [averageOption, setAverageOption] = useState<{}>({});
+  const [tableDataVal, setTableDataVal] = useState<[]>([]);
+  const [tableDataVal1, setTableDataVal1] = useState<[]>([]);
+  const [selectedTitle, setSelectedTitle] = useState<string>('');
 
   useEffect(() => {
-    setRateOption({
-      title: {
-        text: '考试提交率统计表',
-        subtext: '记录每场考试的提交率',
-      },
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-          type: 'shadow',
-        },
-      },
-      grid: {
-        //   left: '3%',
-        //   right: '4%',
-        top: 80,
-        //   bottom: '3%',
-        //   containLabel: true,
-      },
-      xAxis: [
-        {
-          type: 'category',
-          data: ['期末考试一', '期末考试二', '期末考试三', '期末考试四'],
-          axisTick: {
-            alignWithLabel: true,
-          },
-          axisLabel: {
-            interval: 0,
-            rotate: -30, //倾斜的程度
-          },
-        },
-      ],
-      yAxis: [
-        {
-          type: 'value',
-          name: '提交率(%)',
-          axisLine: {
-            show: true,
-            lineStyle: {
-              // color: '#CCCED0',
-            },
-          },
-        },
-      ],
-      series: [
-        {
-          name: '提交率',
-          type: 'bar',
-          barWidth: '60%',
-          data: [90, 89, 76, 92],
-        },
-      ],
-    });
-
-    setAverageOption({
-      title: {
-        text: '成绩统计表',
-        subtext: '记录每场考试的成绩',
-      },
-      legend: {
-        data: ['最高分', '平均分', '最低分'],
-        left: '38%',
-      },
-      grid: {
-        left: '3%',
-        right: '4%',
-        top: 80,
-        bottom: '3%',
-        containLabel: true,
-      },
-      tooltip: {
-        trigger: 'axis',
-      },
-      xAxis: {
-        type: 'category',
-        data: ['期末考试一', '期末考试二', '期末考试三', '期末考试四'],
-        // 垂直显示
-        // axisLabel: {
-        //   interval: 0,
-        //   formatter: function (value) {
-        //     return value.split('').join('\n');
-        //   },
-        // },
-        axisLabel: {
-          interval: 0,
-          rotate: -30, //倾斜的程度
-        },
-      },
-      yAxis: {
-        type: 'value',
-        name: '平均分',
-        axisLine: {
-          show: true,
-          lineStyle: {
-            // color: '#CCCED0',
-          },
-        },
-      },
-      series: [
-        {
-          name: '最高分',
-          data: [97, 94, 90, 98],
-          type: 'line',
-        },
-        {
-          name: '平均分',
-          data: [88, 80, 82, 91],
-          type: 'line',
-        },
-        {
-          name: '最低分',
-          data: [70, 67, 58, 7],
-          type: 'line',
-        },
-      ],
-    });
+    getScoreDetail();
   }, []);
 
   useEffect(() => {
@@ -140,9 +31,7 @@ const ExaminationManagement: React.FC = () => {
   }, [rateOption]);
 
   useEffect(() => {
-    const chartDom: HTMLElement | null = document.getElementById(
-      'chart-examination-average-result',
-    );
+    const chartDom: HTMLElement | null = document.getElementById('chart-examination-average-result');
     const myChart = echarts.init(chartDom as HTMLElement);
     averageOption && myChart.setOption(averageOption, true);
   }, [averageOption]);
@@ -168,9 +57,17 @@ const ExaminationManagement: React.FC = () => {
       align: 'center',
       width: 100,
       dataIndex: 'id',
-      render(value: number) {
+      render(value: number, record: any) {
         return (
-          <Button onClick={() => setIsModalVisible(true)} type="link" style={{ color: '#43BCFF' }}>
+          <Button
+            onClick={() => {
+              setSelectedTitle(record.name);
+              setIsModalVisible(true);
+              getScoreByWorkId(value);
+            }}
+            type="link"
+            style={{ color: '#43BCFF' }}
+          >
             查看详情
           </Button>
         );
@@ -209,19 +106,172 @@ const ExaminationManagement: React.FC = () => {
         footer={null}
         width={850}
       >
+        <p style={{ fontWeight: 'bold' }}>{selectedTitle}</p>
         <div className={(tableStyles['table-wrap'], styles['modal-table'])}>
           <Table
             // className={tableStyles['log-tab']}
             columns={workDetailColumnConfig as any}
             dataSource={tableDataVal1}
             pagination={pagination as any}
-            loading={tableLoading}
+            loading={tableLoading1}
             scroll={{ y: 240 }}
           />
         </div>
       </Modal>
     </PageContainer>
   );
+
+  async function getScoreDetail() {
+    setTableLoading(true);
+    setTableLoading;
+    const res = await scoreManagement.scoreDetail({
+      type: '1',
+    });
+    if (res && res.code === 200) {
+      setTableLoading(false);
+      setTableDataVal(res.data);
+      console.log(res.data);
+      const nameLists: string[] = [];
+      const submitRateLists: number[] = [];
+      const lowestScoreLists: number[] = [];
+      const highestScoreLists: number[] = [];
+      const averageScoreLists: number[] = [];
+      for (const value of res.data) {
+        nameLists.push(value.name);
+        submitRateLists.push(value.submitRate);
+        lowestScoreLists.push(value.lowestScore);
+        highestScoreLists.push(value.highestScore);
+        averageScoreLists.push(value.averageScore);
+      }
+      setRateOption({
+        title: {
+          text: '考试提交率统计表',
+          subtext: '记录每组考试提交率',
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'shadow',
+          },
+        },
+        grid: {
+          //   left: '3%',
+          //   right: '4%',
+          top: 80,
+          //   bottom: '3%',
+          //   containLabel: true,
+        },
+        xAxis: [
+          {
+            type: 'category',
+            data: nameLists,
+            axisTick: {
+              alignWithLabel: true,
+            },
+            axisLabel: {
+              interval: 0,
+              rotate: -30, //倾斜的程度
+            },
+          },
+        ],
+        yAxis: [
+          {
+            type: 'value',
+            name: '提交率(%)',
+            axisLine: {
+              show: true,
+              lineStyle: {
+                // color: '#CCCED0',
+              },
+            },
+          },
+        ],
+        series: [
+          {
+            name: '提交率',
+            type: 'bar',
+            barWidth: '60%',
+            data: submitRateLists,
+          },
+        ],
+      });
+
+      setAverageOption({
+        title: {
+          text: '成绩统计表',
+          subtext: '记录每组考试的成绩',
+        },
+        legend: {
+          data: ['最高分', '平均分', '最低分'],
+          left: '38%',
+        },
+        grid: {
+          left: '3%',
+          right: '4%',
+          top: 80,
+          bottom: '3%',
+          containLabel: true,
+        },
+        tooltip: {
+          trigger: 'axis',
+        },
+        xAxis: {
+          type: 'category',
+          data: nameLists,
+          // 垂直显示
+          // axisLabel: {
+          //   interval: 0,
+          //   formatter: function (value) {
+          //     return value.split('').join('\n');
+          //   },
+          // },
+          axisLabel: {
+            interval: 0,
+            rotate: -30, //倾斜的程度
+          },
+        },
+        yAxis: {
+          type: 'value',
+          name: '平均分',
+          axisLine: {
+            show: true,
+            lineStyle: {
+              // color: '#CCCED0',
+            },
+          },
+        },
+        series: [
+          {
+            name: '最高分',
+            data: highestScoreLists,
+            type: 'line',
+          },
+          {
+            name: '平均分',
+            data: averageScoreLists,
+            type: 'line',
+          },
+          {
+            name: '最低分',
+            data: lowestScoreLists,
+            type: 'line',
+          },
+        ],
+      });
+    }
+  }
+
+  async function getScoreByWorkId(workId: number) {
+    setTableLoading1(true);
+    const res = await scoreManagement.scoreDetailByWorkId({
+      type: '1',
+      workId,
+    });
+    if (res && res.code === 200) {
+      setTableLoading1(false);
+      setTableDataVal1(res.data);
+    }
+  }
 };
 
-export default ExaminationManagement;
+export default WorkManagement;

@@ -14,13 +14,13 @@ export const columnConfig = [
   {
     title: '教学目标',
     align: 'center',
-    width: 150,
+    width: 100,
     dataIndex: 'title',
   },
   {
     title: '内容',
     align: 'center',
-    width: 100,
+    width: 150,
     dataIndex: 'content',
   },
 ];
