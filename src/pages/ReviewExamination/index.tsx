@@ -118,16 +118,16 @@ const CorrectWork: React.FC = () => {
                     .filter((item) => item.type == 0)
                     .map((item, index) => (
                       <div key={item.id} className={styles['project-item']}>
-                        <Row>
+                        <Row align="start">
                           <Col span={20}>
-                            <Space>
+                            <Space align="start">
                               <pre style={{ marginBottom: '0px' }}>
                                 {index + 1}.{item.questionStem}
                               </pre>
-                              <span>({item.score}分)</span>
-                              <span style={{ color: 'green', fontWeight: 600 }}>
+                              <span style={{ color: 'green', fontWeight: 600, marginLeft: '10px' }}>
                                 (知识点：{getExercisePoint(item.knowledgePoint)})
                               </span>
+                              <span>({item.score}分)</span>
                             </Space>
                           </Col>
                           <Col span={2} push={2}>
@@ -211,14 +211,14 @@ const CorrectWork: React.FC = () => {
                       <div key={item.id} className={styles['project-item']}>
                         <Row>
                           <Col span={18}>
-                            <Space>
+                            <Space align="start">
                               <pre style={{ marginBottom: '0px' }}>
                                 {index + 1}.{item.questionStem}
                               </pre>
-                              <span>({item.score}分)</span>
-                              <span style={{ color: 'green', fontWeight: 600 }}>
+                              <span style={{ color: 'green', fontWeight: 600, marginLeft: '10px' }}>
                                 (知识点：{getExercisePoint(item.knowledgePoint)})
                               </span>
+                              <span>({item.score}分)</span>
                             </Space>
                           </Col>
                           <Col span={6}>

@@ -155,14 +155,14 @@ const GroupWorkDetail: React.FC = (props: any) => {
                   .filter((item) => Number(item.type) === 0)
                   .map((item, index) => (
                     <div key={item.id} className={styles['project-item']}>
-                      <Space>
+                      <Space align="start">
                         <pre style={{ marginBottom: '0px' }}>
                           {index + 1}.{item.questionStem}
                         </pre>
-                        <span>({item.score}分)</span>
-                        <span style={{ color: 'green', fontWeight: 600 }}>
+                        <span style={{ color: 'green', fontWeight: 600, marginLeft: '10px' }}>
                           (知识点：{getExercisePoint(item.knowledgePoint)})
                         </span>
+                        <span>({item.score}分)</span>
                       </Space>
                       <div style={{ marginTop: '5px' }}>
                         <Space direction="vertical">
@@ -238,14 +238,14 @@ const GroupWorkDetail: React.FC = (props: any) => {
                   .filter((item) => Number(item.type) === 1)
                   .map((item, index) => (
                     <div key={item.id} className={styles['project-item']}>
-                      <Space>
+                      <Space align="start">
                         <pre style={{ marginBottom: '0px' }}>
                           {index + 1}.{item.questionStem}
                         </pre>
-                        <span>({item.score}分)</span>
-                        <span style={{ color: 'green', fontWeight: 600 }}>
+                        <span style={{ color: 'green', fontWeight: 600, marginLeft: '10px' }}>
                           (知识点：{getExercisePoint(item.knowledgePoint)})
                         </span>
+                        <span>({item.score}分)</span>
                       </Space>
                       <div style={{ marginTop: '5px' }}>
                         <p style={{ fontWeight: 600 }}>参考答案：</p>

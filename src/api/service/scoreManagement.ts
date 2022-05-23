@@ -17,7 +17,7 @@ export const scoreDetailByWorkId = (data: any) => {
   });
 };
 
-export const finalScoreList = (data: any = {}) => {
+export const finalScoreList = (data: any) => {
   return request({
     method: 'post',
     url: URL.finalScoreList,

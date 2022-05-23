@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import tableStyles from '@/assets/styles/table.less';
-import { Button, Col, Modal, Row, Table } from 'antd';
+import { Button, Col, Modal, Row, Select, Space, Table } from 'antd';
 import { workColumnConfig, workDetailColumnConfig } from './constant';
 import styles from './index.less';
 import './index.less';
 import * as echarts from 'echarts';
-import { scoreManagement } from '@/api/service';
+import { scoreManagement, teachingOutline } from '@/api/service';
 
 const WorkManagement: React.FC = () => {
   const [searchCondition, setSearchCondition] = useState({ page: 1, pageSize: 20 });
@@ -19,10 +19,16 @@ const WorkManagement: React.FC = () => {
   const [tableDataVal, setTableDataVal] = useState<[]>([]);
   const [tableDataVal1, setTableDataVal1] = useState<[]>([]);
   const [selectedTitle, setSelectedTitle] = useState<string>('');
+  const [selectData, setSelectData] = useState<any[]>([]);
+  const [teachingOutlineId, setTeachingOutlineId] = useState<number>(-1);
+
+  useEffect(() => {
+    getTeachingOutlineList();
+  }, []);
 
   useEffect(() => {
     getScoreDetail();
-  }, []);
+  }, [teachingOutlineId]);
 
   useEffect(() => {
     const chartDom: HTMLElement | null = document.getElementById('chart-examination-rate-result');
@@ -31,7 +37,9 @@ const WorkManagement: React.FC = () => {
   }, [rateOption]);
 
   useEffect(() => {
-    const chartDom: HTMLElement | null = document.getElementById('chart-examination-average-result');
+    const chartDom: HTMLElement | null = document.getElementById(
+      'chart-examination-average-result',
+    );
     const myChart = echarts.init(chartDom as HTMLElement);
     averageOption && myChart.setOption(averageOption, true);
   }, [averageOption]);
@@ -77,6 +85,28 @@ const WorkManagement: React.FC = () => {
 
   return (
     <PageContainer>
+      <Row justify="end" style={{ marginBottom: '15px' }}>
+        <Col span={9}>
+          <Space>
+            <span>教学大纲检索：</span>
+            <Select
+              showSearch
+              style={{ width: 250 }}
+              placeholder="请选择教学大纲"
+              optionFilterProp="children"
+              onChange={(value: number) => {
+                setTeachingOutlineId(value);
+              }}
+            >
+              {selectData.map((item) => (
+                <Select.Option id={item.id} value={item.id}>
+                  {item.title}
+                </Select.Option>
+              ))}
+            </Select>
+          </Space>
+        </Col>
+      </Row>
       <h3>考试完成情况</h3>
       <div className={tableStyles['table-wrap']}>
         <Table
@@ -121,11 +151,31 @@ const WorkManagement: React.FC = () => {
     </PageContainer>
   );
 
+  async function getTeachingOutlineList() {
+    const res = await teachingOutline.getTeachingOutlineList({
+      page: 1,
+      pageSize: 1000,
+      id: -1,
+    });
+    if (res && res.code === 200) {
+      // 构造出下拉列表需要的数据
+      if (selectData.length !== 0) return;
+      const result: { id: number; title: string }[] = res.data.map((item: any) => {
+        return {
+          id: item.id,
+          title: `${item.title}(${item.version})`,
+        };
+      });
+      setSelectData(result);
+    }
+  }
+
   async function getScoreDetail() {
     setTableLoading(true);
     setTableLoading;
     const res = await scoreManagement.scoreDetail({
       type: '1',
+      teachingOutlineId,
     });
     if (res && res.code === 200) {
       setTableLoading(false);

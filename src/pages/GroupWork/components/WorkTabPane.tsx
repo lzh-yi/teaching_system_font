@@ -32,6 +32,8 @@ const WorkTabPane: React.FC = (props: any) => {
   const [upLoading, setUpLoading] = useState<boolean>(false);
   const [editVisible, setEditVisible] = useState<boolean>(false);
   const [initialValues, setInitialValues] = useState<{}>({});
+  const [teachingOutlineId, setTeachingOutlineId] = useState<number>(-1);
+  const [groupWorkName, setGroupWorkName] = useState<string>('');
 
   const bgColor = {
     '0': {
@@ -54,11 +56,35 @@ const WorkTabPane: React.FC = (props: any) => {
     return (
       <div>
         <Row style={{ marginBottom: '15px' }}>
-          <Col push={18} span={6}>
+          <Col span={12}>
+            <Space>
+              <span>教学大纲检索：</span>
+              <Select
+                showSearch
+                style={{ width: 250 }}
+                placeholder="请选择教学大纲"
+                optionFilterProp="children"
+                onChange={(value: number) => {
+                  setTeachingOutlineId(value);
+                  searchGroupWorkByName(groupWorkName, value);
+                }}
+              >
+                {selectData.map((item) => (
+                  <Option id={item.id} value={item.id}>
+                    {item.title}
+                  </Option>
+                ))}
+              </Select>
+            </Space>
+          </Col>
+          <Col push={6} span={6}>
             <Search
               placeholder="请输入习题分组名称"
               enterButton
-              onSearch={(value: string) => searchGroupWorkByName(value)}
+              onSearch={(value: string) => {
+                setGroupWorkName(value);
+                searchGroupWorkByName(value, teachingOutlineId);
+              }}
             />
           </Col>
         </Row>
@@ -165,11 +191,35 @@ const WorkTabPane: React.FC = (props: any) => {
   return (
     <div>
       <Row style={{ marginBottom: '15px' }}>
-        <Col push={18} span={6}>
+        <Col span={12}>
+          <Space>
+            <span>教学大纲检索：</span>
+            <Select
+              showSearch
+              style={{ width: 250 }}
+              placeholder="请选择教学大纲"
+              optionFilterProp="children"
+              onChange={(value: number) => {
+                setTeachingOutlineId(value);
+                searchGroupWorkByName(groupWorkName, value);
+              }}
+            >
+              {selectData.map((item) => (
+                <Option id={item.id} value={item.id}>
+                  {item.title}
+                </Option>
+              ))}
+            </Select>
+          </Space>
+        </Col>
+        <Col push={6} span={6}>
           <Search
             placeholder="请输入习题分组名称"
             enterButton
-            onSearch={(value: string) => searchGroupWorkByName(value)}
+            onSearch={(value: string) => {
+              setGroupWorkName(value);
+              searchGroupWorkByName(value, teachingOutlineId);
+            }}
           />
         </Col>
       </Row>
@@ -398,12 +448,13 @@ const WorkTabPane: React.FC = (props: any) => {
     }
   }
 
-  function searchGroupWorkByName(value: string) {
+  function searchGroupWorkByName(value: string, teachingOutlineId: number = -1) {
     setSearchCondition({
       page: 1,
       pageSize: 1000,
       id: -1,
       name: value,
+      teachingOutlineId,
     });
   }
 

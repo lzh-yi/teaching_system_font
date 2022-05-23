@@ -9,6 +9,7 @@ import * as workStatistics from './statistics';
 import * as exerciseComplete from './exerciseComplete';
 import * as examination from './examination';
 import * as scoreManagement from './scoreManagement';
+import * as degreeAnalyses from './degreeAnalyses';
 
 export {
   teachingOutline,
@@ -22,4 +23,5 @@ export {
   exerciseComplete,
   examination,
   scoreManagement,
+  degreeAnalyses,
 };

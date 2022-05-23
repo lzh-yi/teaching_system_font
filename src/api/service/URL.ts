@@ -104,6 +104,11 @@ const scoreManagement = {
   finalScoreList: '/api/score_management/final_score',
 };
 
+/** 达成度分析 */
+const degree = {
+  degreeAnalyses: '/api/degree_analyses/detail',
+};
+
 export default {
   ...teachingOutline,
   ...teachingSchedule,
@@ -116,4 +121,5 @@ export default {
   ...exerciseComplete,
   examination,
   ...scoreManagement,
+  ...degree,
 };
