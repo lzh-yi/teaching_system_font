@@ -34,10 +34,15 @@ export const knowledgePointSelectData = (data: any) => {
 };
 
 export const insertCompleteList = (data: any) => {
+  const dataCopy = {
+    knowledgePointId: -1,
+    ...data,
+  };
+
   return request({
     method: 'post',
     url: URL.examination.insertCompleteList,
-    data,
+    data: dataCopy,
   });
 };
 

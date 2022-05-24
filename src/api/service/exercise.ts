@@ -10,9 +10,13 @@ export const addExercise = (data: any) => {
 };
 
 export const exerciseList = (data: any) => {
+  const dataCopy = {
+    knowledgePointId: -1,
+    ...data,
+  };
   return request({
     method: 'post',
     url: URL.exerciseList,
-    data,
+    data: dataCopy,
   });
 };

@@ -3,6 +3,7 @@ import { Col, Row, Select, Space, Table } from 'antd';
 import React, { useState, useEffect } from 'react';
 import tableStyles from '@/assets/styles/table.less';
 import { teachingOutline, degreeAnalyses } from '@/api/service';
+import { isNaN, isNumber } from 'lodash';
 
 const DegreeAnalyses: React.FC = () => {
   const [searchCondition, setSearchCondition] = useState({ page: 1, pageSize: 20 });
@@ -102,21 +103,27 @@ const DegreeAnalyses: React.FC = () => {
       // 生成列配置
       const columns: any[] = [];
       const tableDataConfig: {} = {};
-      for (const value of res.data) {
-        columns.push({
-          title: value.title,
-          align: 'center',
-          width: 100,
-          dataIndex: `degree${value.teachingGoalId}`,
-        });
-        tableDataConfig[`degree${value.teachingGoalId}`] = value.rate.toFixed(2);
+      if (res.data.length !== 0) {
+        for (const value of res.data) {
+          columns.push({
+            title: value.title,
+            align: 'center',
+            width: 100,
+            dataIndex: `degree${value.teachingGoalId}`,
+          });
+          if (isNumber(value?.rate)) {
+            tableDataConfig[`degree${value.teachingGoalId}`] = value.rate.toFixed(2);
+          } else {
+            tableDataConfig[`degree${value.teachingGoalId}`] = 0;
+          }
+        }
+        setColumnConfig(columns);
+        setTableDataVal([
+          {
+            ...tableDataConfig,
+          },
+        ]);
       }
-      setColumnConfig(columns);
-      setTableDataVal([
-        {
-          ...tableDataConfig,
-        },
-      ]);
     }
   }
 };

@@ -55,7 +55,8 @@ const GroupWorkDetail: React.FC = (props: any) => {
   const [knowledgePointList, setKnowledgePointList] = useState<any[]>([]);
 
   // 标记当前习题组是否是未发布状态
-  const { workGroupStatus, workId, outlineId } = props;
+  let { workGroupStatus, workId, outlineId } = props;
+  workId = Number(workId);
   const bgColor = {
     '0': {
       color: '#C6CED6',
