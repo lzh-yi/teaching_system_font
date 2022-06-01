@@ -20,6 +20,8 @@ const UploadSyllabus: React.FC = (props: any) => {
         message.success(`${info.file.name} 上传成功`);
         fileName = info.file.response.data.fileName;
         filePath = info.file.response.data.filePath;
+      } else {
+        console.log(info);
       }
     },
   };

@@ -80,6 +80,6 @@ export const workCompleteCol = [
 
 function getUserName(userId: number) {
   for (const value of userList) {
-    if (userId === value.id) return value.userName;
+    if (userId == value.id) return value.userName;
   }
 }
